@@ -1,0 +1,206 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC07 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC07
+
+Considere os dados no ficheiro em formato SPSS "ConsumoJovensPTES200.sav" que se referem a um inquérito sobre fatores de compra e hábitos de consumo para jovens portugueses e espanhóis entre os 16 e os 25 anos.
+
+Para além de algumas questões de índole sociodemográfica irá encontrar um conjunto de questões referentes a locais habituais de compras; à importância de diversos aspetos na compra (grupo 14, 0-100); a considerar-se fiel a marcas e/ou lojas específicas (grupo 13); às perspetivas de vida futura e valores (grupos 16 e 17), entre outras.
+
+<br>
+
+**1**. <b>Pretende-se estimar a importância média concedida à Imagem do Produto enquanto fator de influência na compra, através de um intervalo de confiança apropriado, a 95% de confiança.</b>
+
+Começaremos por carregar os dados em R. Para tal, usaremos a biblioteca `foreign` que permite ler ficheiros SPSS. Evocamos a função `read.spss()` onde usaremos o argumento `file` para indicar o caminho do ficheiro SPSS - que será escolhido manualmente pelo utilizador ( através da função `file.choose()` ) - e o argumento `to.data.frame` para indicar que queremos que os dados sejam armazenados num dataframe.
+
+```{r}
+# Instalar a biblioteca foreign caso ainda não esteja instalada
+# install.packages("foreign")
+
+# Carregar a biblioteca foreign
+library(foreign)
+
+# Ler o ficheiro SPSS para um dataframe
+dados <- read.spss(file = file.choose(), to.data.frame = TRUE)
+```
+
+<br>
+
+Passos a seguir:
+
+<u><b>*1. Definir a variável em estudo*</b></u>
+
+A variável em estudo é a `q14_Imagem` que representa a importância que os jovens dão à imagem de um produto antes de o comprar, numa escala de 0 a 100.
+
+Podemos então definir, $X$ - Importância concedida à Imagem do Produto enquanto fator de influência na compra
+
+Fazemos em seguida uma breve análise sobre a variável em estudo para perceber a sua distribuição assim como a sua representação gráfica através de um histograma.
+
+```{r}
+# Breve análise sobre a variável
+summary(dados$q14_Imagem)
+```
+
+```{r}
+# Histograma da variável em estudo 
+hist(dados$q14_Imagem,
+     main = "Histograma de q14_Imagem",
+     xlab = "Valores",
+     col = "lightblue",
+     breaks = 20)
+```
+
+<br>
+
+<u><b>*2. Identificar o parâmetro a estimar*</b></u>
+
+O parâmetro que se pretende estimar é a importância média concedida à imagem do produto enquanto fator de influência na compra para toda a população de jovens, usando os dados da amostra. Ou seja, queremos estimar a média populacional $\mu$ e vamos usar a média amostral $\bar{x}$ como estimador da média populacional $\mu$.
+
+<br>
+
+<u><b>*3. Escolher a variável fulcral conveniente para a estimação*</b></u>
+
+Sendo a variância da população desconhecida, o parâmetro a estimar $\mu$ e a dimensão da amostra superior a 30, podemos usar a seguinte variável fulcral:
+
+$$
+VF = \frac{\bar{x} - \mu}{S'_{\bar{x}}} \space \space \dot{\sim} \space \space N(0,1),\quad \text{sendo} \quad S'_{\bar{x}} = \frac{S'}{\sqrt{n}}
+$$ <br>
+
+<u><b>*4. Identificar o intervalo teórico (estimador)*</b></u>
+
+O intervalo de confiança para a média populacional ($\mu$) é dado por:
+
+$$
+I_{0.95}(\mu) = \biggr] \bar{x} - z\cdot \frac{S'}{\sqrt{n}} \space \space , \space \space \bar{x} + z\cdot \frac{S'}{\sqrt{n}} \biggr[
+$$
+
+-   Onde:
+
+-   $\bar{x}$: Média amostral
+
+-   $z$: Valor crítico da distribuição normal correspondente ao nível de confiança (1.96 para 95%)
+
+-   $S'$: Desvio padrão amostral
+
+-   $n$: Tamanho da amostra
+
+<br>
+
+<u><b>*5. Calcular os valores amostrais necessários*</b></u>
+
+É necessário calcular a média amostral ($\bar{x}$) , o desvio-padrão amostral ($S'$) e a dimensão da amostra ($n$).
+
+```{r}
+media         <- mean(dados$q14_Imagem)
+desvio_padrao <- sd(dados$q14_Imagem)
+n             <- length(dados$q14_Imagem)
+```
+
+Ficando:
+
+$\bar{x}$ - `r round(media,2)`
+
+$S'$ - `r round(desvio_padrao,2)`
+
+$n$ - `r (n)`
+
+<br>
+
+<u><b>*6. Construir o intervalo concreto (estimativa)*</b></u>
+
+Definido o intervalo teórico na alínea 4), calculamos uma estimativa para o seu valor:\
+
+```{r}
+# Nível de confiança
+λ <- 0.95
+z <- qnorm(1 - (1 - λ) / 2)
+
+# Erro
+erro <- z * (desvio_padrao / sqrt(n))
+
+# Intervalo de confiança
+lower_bound <- media - erro
+upper_bound <- media + erro
+```
+
+O intervalo de confiança de 95% para a média populacional é dado por:
+
+::: {style="text-align: center;"}
+$I_{0.95}(\mu) \space = \space \bigr]$ `r round(lower_bound,2)` $,$ `r round(upper_bound,2)` $\bigr[$
+:::
+
+<br>
+
+<u><b>*7. Interpretar o intervalo obtido.*</b></u>
+
+Espera-se que o verdadeiro valor da importância que os jovens dão à imagem do produto no processo de compra se situe entre os **`r round(lower_bound,2)`** e os **`r round(upper_bound,2)`**, dado que este intervalo de confiança concreto foi obtido a partir de um intervalo de confiança aleatório cuja probabilidade de conter a verdadeira média é de 0.95 <br> ($\lambda$ = 0.95).
+
+<br>
+
+<hr>
+
+<br>
+
+**2.**
+
+O bootstrapping fornece uma abordagem alternativa para realizar inferência sobre a média, onde estimamos diretamente a distribuição amostral de $\bar{x}$ a partir dos dados já recolhidos. A ideia é realizar repetidas amostragens com reposição a partir dos dados que obtivemos (com a mesma dimensão da amostra original, designadas reamostragens) e calcular o valor de $\bar{x}$ para cada reamostra. A amostra obtida é uma estimativa para a distribuição de $\bar{x}$ .
+
+Esta técnica permite realizar inferência sobre a média quando o comportamento estatístico da característica em estudo é desconhecido, mesmo em amostras de pequena dimensão (para as quais não podemos invocar o TLC para derivar a distribuição da média amostral)
+
+Sendo $\lambda$ o nível de confiança a considerar, o intervalo de confiança bootstrap pode ser obtido diretamente, calculando quantis adequados dessa amostra de médias: $\frac{1-\lambda}{2}$ e $(1-\frac{1-\lambda}{2})$.
+
+<b>Use 10000 reamostragens e obtenha um Intervalo de confiança bootstrap a 95% para a importância média concedida à Imagem do Produto. Compare com o intervalo construído em 1.</b>
+
+<br>
+
+```{r}
+# Selecionar a variável em estudo
+imagem_produto <- dados$q14_Imagem
+
+# Número de reamostragens
+n_reamostras <- 10000
+
+set.seed(123) # Para reprodutibilidade
+
+# Bootstraping
+medias_bootstrap <- replicate(n_reamostras, {
+    reamostra <- sample(imagem_produto, replace = TRUE)
+    mean(reamostra)
+})
+
+# Calcular os quantis para o intervalo de confiança a 95%
+λ <- 0.95
+quantil_inferior <- (1 - λ) / 2
+quantil_superior <- 1 - quantil_inferior
+
+ic_bootstrap <- quantile(medias_bootstrap, probs = c(quantil_inferior, quantil_superior))
+
+# Visualizar o intervalo de confiança bootstrap
+ic_bootstrap
+```
+
+Chegamos então ao seguinte intervalo de confiança *bootstrap:*
+
+::: {style="text-align: center;"}
+$IB_{0.95}(\mu)^* \space = \space \bigr]$ `r round(ic_bootstrap[1],2)` $,$ `r round(ic_bootstrap[2], 2)`$\bigr[$
+:::
+
+<br>
+
+O intervalo de confiança obtido através do método bootstrap, que foi calculado com 10000 reamostragens, e através do método clássico construído em 1) são bastante semelhantes.
+
+A semelhança entre os intervalos indica que a distribuição dos dados é bem comportada e que o tamanho da amostra é suficiente para garantir a robustez de ambos os métodos. O bootstrap, neste caso, confirma a adequação das suposições do método clássico.

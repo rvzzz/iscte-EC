@@ -1,0 +1,463 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC08 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC08
+
+Considere, tal como no TPC07, os dados no ficheiro em formato SPSS "ConsumoJovensPTES200.sav" que se referem a um inquérito sobre fatores de compra e hábitos de consumo para jovens portugueses e espanhóis entre os 16 e os 25 anos.
+
+Para além de algumas questões de índole sociodemográfica irá encontrar um conjunto de questões referentes a locais habituais de compras; à importância de diversos aspetos na compra (grupo 14, 0-100); a considerar-se fiel a marcas e/ou lojas específicas (grupo 13); às perspetivas de vida futura e valores (grupos 16 e 17), entre outras.
+
+```{r message=FALSE}
+# Instalar e carregar os pacotes necessários
+# install.packages("foreign")
+# install.packages("dplyr")
+# install.packages("ggplot2")
+```
+
+```{r message=FALSE}
+# Carregar pacotes
+library(foreign)
+library(dplyr)
+library(ggplot2)
+
+# Importar os dados SPSS
+dados <- read.spss(file = file.choose(), to.data.frame = TRUE)
+```
+
+**1. Será que podemos descartar a hipótese da importância concedida às características do produto enquanto fator de compra de um produto ser, em termos médios, 25?**
+
+Variável em estudo: $X$ - Importância concedida às características do produto enquanto fator determinante no ato da compra.
+
+</p>
+
+O parâmetro que pretendemos estudar é: $μ$.
+
+</p>
+
+Nível de significância de referência a considerar: 5%, **α = 0.05**
+
+</p>
+
+As hipóteses em teste serão:
+
+-   H0: $μ = 25$, ou seja, a importância média concedida às características é **igual** a 25.
+
+-   H1: $μ ≠ 25$, ou seja, a importância média concedida às características é **diferente** de 25.
+
+</p>
+
+Como queremos determinar se a média é diferente de um valor específico, sem uma direção especifica (pode ser maior ou menor), usamos um **teste bilateral**.
+
+</p>
+
+Podemos tomar decisões de duas formas:
+
+-   Identificar a Região Crítica (RC) e a Região Não Crítica (RNC), com base no α dado (0.05), e verificar a que região a Estatística de Teste pertence;
+
+-   Calcular o *p-value* após termos obtido o valor concreto da Estatística de Teste para este caso, e compará-lo com α.
+
+Vamos começar por definir a Região Crítica e Não Crítica para um teste bilateral:
+
+```{r}
+# Definir o nível de significância alfa:
+alfa <- 0.05
+
+# Preparar o espaço:
+eixo_x <- c(-7.5, 7.5)
+eixo_y <- c(0, dnorm(0))
+
+# Plotar o gráfico:
+plot(
+    1,
+    xlim = eixo_x,
+    ylim = eixo_y,
+    type = "n",
+    main = "Teste Bilateral",
+    ylab = "f.d.p",
+    xlab = "Valor de Z"
+)
+
+# Desenhar a função normal padrão
+abline(h = 0, col = "grey")
+abline(v = 0, col = "grey")
+curve(
+    dnorm(x),
+    from = eixo_x[1],
+    to = eixo_x[2],
+    n = 1000,
+    col = "darkblue",
+    lwd = 2,
+    add = TRUE
+)
+
+# Calcular os valores críticos para um teste bilateral (alpha/2)
+zcrit <- qnorm(1 - alfa / 2)
+
+# Sombrear a área da região crítica à direita
+x1 <- seq(zcrit, eixo_x[2], 0.01)
+y1 <- dnorm(x1)
+coord_x1 <- c(zcrit, x1, eixo_x[2])
+coord_y1 <- c(0, y1, 0)
+
+# Sombrear a área da região crítica à esquerda
+x2 <- seq(eixo_x[1], -zcrit, 0.01)
+y2 <- dnorm(x2)
+coord_x2 <- c(eixo_x[1], x2, -zcrit)
+coord_y2 <- c(0, y2, 0)
+
+# Adicionar os polígonos de região crítica:
+polygon(coord_x1, coord_y1, col = 'blue', border = NA)
+polygon(coord_x2, coord_y2, col = 'blue', border = NA)
+
+# Adicionar linhas verticais nas regiões críticas
+abline(
+    v = c(-zcrit, zcrit),
+    col = "red",
+    lwd = 2,
+    lty = 2
+)
+
+# Adicionar textos
+text(
+    x = 3.7,
+    y = 0.3,
+    labels = paste("alfa =", alfa),
+    adj = c(0, 0),
+    col = "darkblue"
+)
+axis(
+    1,
+    at = zcrit,
+    labels = round(zcrit, 3),
+    col.ticks = "darkred",
+    lwd.ticks = 2
+)
+axis(
+    1,
+    at = -zcrit,
+    labels = round(-zcrit, 3),
+    col.ticks = "darkred",
+    lwd.ticks = 2
+)
+
+# Adicionar labels para identificar as regiões
+text(
+    x = zcrit + 2,
+    y = 0.08,
+    labels = "Região Crítica",
+    col = "black",
+    cex = 0.9
+)
+text(
+    x = -zcrit - 2,
+    y = 0.08,
+    labels = "Região Crítica",
+    col = "black",
+    cex = 0.9
+)
+text(
+    x = 0,
+    y = 0.08,
+    labels = "Região Não Crítica",
+    col = "black",
+    cex = 0.9
+)
+```
+
+Temos então RC = \]−∞,-1.96\] U \[+1,96;+∞\[ e RNC = \]-1.96;+1.96\[
+
+A Estatística de Teste para o cálculo da média será dada por:
+
+$$ t = \frac{\bar{X} - \mu_0}{\frac{S'}{\sqrt{n}}} $$
+
+-   Onde:
+
+    -   $\bar{X}$: Média amostral
+
+    -   $\mu_0$: Média populacional
+
+    -   $S'$: Desvio padrão amostral
+
+    -   $n$: Tamanho da amostra
+
+Calculemos os valores amostrais:
+
+```{r}
+# Carregar pacotes necessários
+#library(tidyverse)
+
+# Suponha que q_14Produto é o vetor com os dados da variável de interesse
+# Exemplo de amostra:
+q_14Produto <- dados$q14_Produto
+
+# Definindo os parâmetros
+media_amostral <- mean(q_14Produto)    # Média amostral
+desvio_padrao_amostral <- sd(q_14Produto)  # Desvio padrão amostral
+n <- length(q_14Produto)  # Tamanho da amostra
+```
+
+E agora a Estatística de Teste:
+
+```{r}
+# Estatística de teste t
+estatistica_teste1 <- (media_amostral - 25) / (desvio_padrao_amostral / sqrt(n))
+estatistica_teste1
+```
+
+Estatística de Teste = **`r round(estatistica_teste1,2)`** ∈ RC
+
+Como a Estatística de Teste está dentro da Região Crítica, a diferença entre a média amostral e 25 é suficiente grande para rejeitarmos a hipótese nula, para α = 0.05.
+
+Poderíamos também realizar um `t.test()` de forma a averiguar a conclusão anterior:
+
+```{r}
+# Selecionar a variável q14_Produto
+produto <- dados$q14_Produto
+
+# Teste t de uma amostra
+teste_t_1 <- t.test(produto, mu = 25, alternative = "two.sided")
+
+# Resultados
+teste_t_1
+```
+
+Através do método do *p-value* obteríamos a mesma conclusão pois o *p-value* (0.011) é inferior a α = 0.05 o que nos permite rejeitar a hipótese nula.
+
+Concluindo, podemos descartar a hipótese da importância concedida às características do produto enquanto fator de compra de um produto ser, em termos médios, 25.
+
+<br>
+
+<hr>
+
+<br>
+
+**2. Será que os jovens Espanhóis dão mais importância às características do produto, em média, do que os jovens Portugueses?**
+
+A variável em estudo é a mesma da alínea 1: $X$ - Importância concedida às características do produto enquanto fator determinante no ato da compra.
+
+</p>
+
+O parâmetro que pretendemos estudar é: $\mu_{\text{espanha}} - \mu_{\text{portugal}}$.
+
+</p>
+
+Nível de significância de referência a considerar: 5%, **α = 0.05**
+
+</p>
+
+As hipóteses em teste serão:
+
+-   H0​: $\mu_{\text{espanha}} \leq \mu_{\text{portugal}} \iff \mu_{\text{espanha}} - \mu_{\text{portugal}} \leq 0$ , ou seja, a média da importância concedida às características do produto nos espanhóis menor ou igual à media nos portugueses
+
+-   H1​: $\mu_{\text{espanha}} > \mu_{\text{portugal}} \iff \mu_{\text{espanha}} - \mu_{\text{portugal}} > 0$, ou seja, a média da importância concedida às características do produto é maior nos espanhóis do que nos portugueses
+
+</p>
+
+Como estamos a verificar se a média de um grupo é maior do que a de outro, trata-se de um **teste unilateral à direita**.
+
+Podemos tomar decisões de duas formas:
+
+-   Identificar a Região Crítica (RC) e a Região Não Crítica (RNC), com base no α dado (0.05), e verificar a que região a Estatística de Teste pertence;
+
+-   Calcular o p-value após termos obtido o valor concreto da Estatística de Teste para este caso, e compará-lo com α.
+
+Vamos começar por definir a Região Crítica e a Região Não Crítica para um teste unilateral à direita:
+
+```{r}
+# Definir o nível de significância alfa:
+alfa <- 0.05
+
+# Preparar o espaço:
+eixo_x <- c(-7.5, 7.5)
+eixo_y <- c(0, dnorm(0))
+
+# Plotar o gráfico:
+plot(
+    1,
+    xlim = eixo_x,
+    ylim = eixo_y,
+    type = "n",
+    main = "Teste Unilateral à Direita",
+    ylab = "f.d.p",
+    xlab = "Valor de Z"
+)
+
+# Desenhar a função normal padrão
+abline(h = 0, col = "grey")
+abline(v = 0, col = "grey")
+curve(
+    dnorm(x),
+    from = eixo_x[1],
+    to = eixo_x[2],
+    n = 1000,
+    col = "darkblue",
+    lwd = 2,
+    add = TRUE
+)
+
+# Calcular o valor crítico para um teste unilateral à direita
+zcrit2 <- qnorm(1 - alfa)
+
+# Sombrear a área da região crítica à direita
+x1 <- seq(zcrit, eixo_x[2], 0.01)
+y1 <- dnorm(x1)
+coord_x1 <- c(zcrit, x1, eixo_x[2])
+coord_y1 <- c(0, y1, 0)
+
+# Sombrear a área da região não rejeição à esquerda
+x2 <- seq(eixo_x[1], zcrit, 0.01)
+y2 <- dnorm(x2)
+coord_x2 <- c(eixo_x[1], x2, zcrit)
+coord_y2 <- c(0, y2, 0)
+
+# Adicionar o polígono da região crítica à direita
+polygon(coord_x1, coord_y1, col = 'blue', border = NA)
+
+# Adicionar o polígono da região não rejeição à esquerda
+polygon(coord_x2, coord_y2, col = 'white', border = NA)
+
+# Adicionar a linha vertical no valor crítico
+abline(
+    v = zcrit,
+    col = "red",
+    lwd = 2,
+    lty = 2
+)
+
+# Adicionar textos explicativos
+text(
+    x = 3.3,
+    y = 0.3,
+    labels = paste("alfa =", alfa),
+    adj = c(0, 0),
+    col = "darkblue"
+)
+axis(
+    1,
+    at = zcrit,
+    labels = round(zcrit, 3),
+    col.ticks = "darkred",
+    lwd.ticks = 2
+)
+
+
+# Adicionar labels para identificar as regiões
+text(
+    x = zcrit + 2,
+    y = 0.08,
+    labels = "Região Crítica",
+    col = "black",
+    cex = 0.9
+)
+text(
+    x = -1.4,
+    y = 0.08,
+    labels = "Região Não Crítica",
+    col = "black",
+    cex = 0.9
+)
+```
+
+Temos então RC = \[1.645,+∞\[ e RNC = \]-∞,1.645\[
+
+Antes de decidirmos a Estatística de Teste a usar, é necessário tirar uma conclusão acerca das variâncias das amostras visto que elas são desconhecidas. Teremos de decidir se $\sigma_{\text{espanha}}^2$ = $\sigma_{\text{portugal}}^2$ ou então que $\sigma_{\text{espanha}}^2$ ≠ $\sigma_{\text{portugal}}^2$ .
+
+Assim, para o teste da igualdade das variâncias teríamos as seguintes hipóteses:\
+
+-   H0​: $\sigma_{\text{espanha}}^2 = \sigma_{\text{portugal}}^2 \iff \frac{\sigma_{\text{espanha}}^2}{\sigma_{\text{portugal}}^2} = 1$ (as variâncias são iguais).
+
+-   H1​: ​$\sigma_{\text{espanha}}^2 \neq \sigma_{\text{portugal}}^2 \iff \frac{\sigma_{\text{espanha}}^2}{\sigma_{\text{portugal}}^2} \neq 1$ (as variâncias são diferentes).
+
+Para tirar uma conclusão, podemos usar o `var.test()` ou o teste de Bartlett:
+
+```{r}
+# Dados para os jovens espanhóis e portugueses
+
+dados_PT <- dados %>% filter(country == "Portugal")
+dados_ES <- dados %>% filter(country == "Espanha")
+
+# Selecionar a variável q14_Produto para ambos os grupos
+produto_PT <- dados_PT$q14_Produto
+produto_ES <- dados_ES$q14_Produto
+
+
+# Var.test
+var_test <- var.test(produto_ES,
+                     produto_PT,
+                     ratio = 1,
+                     alternative = "two.sided")
+var_test
+
+
+# Teste de Bartlett
+teste_bartlett <- bartlett.test(q14_Produto ~ country, data = dados)
+teste_bartlett
+```
+
+Como o *p_value* (0.01) é inferior α = 0.05, rejeitamos a hipótese nula, ou seja, as variâncias são significativamente diferentes.
+
+Como as variâncias das duas amostras são distintas, a Estatística de Teste para o cálculo da diferença das médias ($\mu_1 - \mu_2$) será dada por:
+
+$$ t =\frac{\bar{X}_1 - \bar{X}_2 - (\mu_1 - \mu_2)_0}{\sqrt{\frac{s_1'^2}{n_1} + \frac{s_2'^2}{n_2}}} $$
+
+Onde:
+
+-   $\bar{X}_1$ e $\bar{X}_2$ são as médias das amostras de jovens espanhóis e portugueses, respectivamente.
+
+-   $(\mu_1$ - $\mu_2)_0$ é a diferença hipotética entre as médias populacionais (normalmente igual zero para um teste de diferença de médias)
+
+-   $s'_1$ e $s'_2$ são os desvios padrão das populações de jovens espanhóis e portugueses.
+
+-   $n_1$ e $n_2$ são os tamanhos das amostras.
+
+Calculemos os valores amostrais:
+
+```{r}
+# Valores amostrais
+media_esp <- mean(produto_ES) #Média da amostra de Espanha
+media_por <- mean(produto_PT) #Média da amostra de Portugal
+desvio_padrao_esp <- sd(produto_ES)  # Desvio padrão da amostra de Espanha
+desvio_padrao_por <- sd(produto_PT)  # Desvio padrão da amostra de Portugal
+
+# Número de observações em cada grupo
+n_esp <- length(produto_ES)
+n_por <- length(produto_PT)
+```
+
+E agora a Estatística de Teste:
+
+```{r}
+# Calcular a estatística de teste para duas amostras
+estatistica_teste2 <- ((media_esp - media_por) - 0) / sqrt((desvio_padrao_esp^2 / n_esp) + (desvio_padrao_por^2 / n_por))
+estatistica_teste2
+```
+
+Estatística de Teste = **`r round(estatistica_teste2,2)`** ∈ RC
+
+Como a Estatística de Teste está dentro da Região Crítica, **rejeitamos a hipótese nula** e concluímos que os jovens espanhóis atribuem mais importância às características do produto.
+
+Poderíamos também realizar um `t.test()` de forma a averiguar a conclusão anterior:
+
+```{r}
+# Teste t para duas amostras independentes
+teste_t_2 <- t.test(produto_ES, produto_PT, alternative = "greater", var.equal = FALSE)
+
+# Resultados
+teste_t_2
+```
+
+Através do método do *p-value* obteríamos a mesma conclusão pois o *p-value* (0.008) é inferior a α (0.05) o que nos permite rejeitar a hipótese nula.

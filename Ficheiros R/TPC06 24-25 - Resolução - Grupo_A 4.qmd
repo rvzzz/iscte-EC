@@ -1,0 +1,411 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC06 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC06
+
+### **Em cada exercício**
+
+1.  Defina teoricamente a variável aleatória de interesse
+
+2.  Especifique teoricamente o modelo probabilístico em causa
+
+3.  Explicite teoricamente a probabilidade pedida
+
+4.  Calcule a probabilidade pedida, recorrendo a funções R apropriadas.
+
+<hr>
+
+<br>
+
+### Enunciado
+
+A deslocação entre dois locais, A e B, em Lisboa, pode ser efetuada eficazmente em transportes públicos de duas formas:
+
+<u>
+
+<h5>Alternativa 1:</h5>
+
+</u>
+
+> Usar a carreira A1 da Carris no primeiro troço e um trajeto de metropolitano, ML1, no segundo.
+
+<u>
+
+<h5>Alternativa 2:</h5>
+
+</u>
+
+> Usar apenas autocarros da Carris: carreira A2 no primeiro troço e carreira A3, no segundo
+
+Os tempos (em minutos) gastos em cada troço, e os tempos (em minutos) de deslocação a pé e espera entre os dois troços (E1 na Alternativa 1 e E2 na Alternativa 2) podem todos ser modelizados através de distribuições Normais, com a seguinte especificação: <br> <br>
+
+| Identificação | Média | Desvio-padrão |
+|----------------------------------------------|:-----------:|:-----------:|
+| Duração da deslocação na Carris, carreira A1 | 19 | 4 |
+| Duração da deslocação na Carris, carreira A2 | 10 | 4 |
+| Duração da deslocação na Carris, carreira A3 | 10 | 5 |
+| Duração da deslocação no Metropolitano | 5 | 1 |
+| Tempo de deslocação a pé e espera entre transportes na alternativa 1 | 7 | 3 |
+| Tempo de deslocação a pé e espera entre transportes na alternativa 2 | 10 | 3 |
+
+<br>
+
+<hr>
+
+<br>
+
+1.  **Formalize as variáveis aleatórias acima identificadas, defina as variáveis aleatórias X~A1~ e X~A2~, que correspondem ao tempo total necessário para efetuar o percurso em cada uma das referidas alternativas e deduza, fundamentando, a distribuição de cada uma delas.**
+
+Sejam as variáveis aleatórias:
+
+::: {style="padding-left: 70px;"}
+$X_{C_1}$ - Duração, em minutos, da deslocação na Carris na carreira A1
+
+$X_{C_2}$ - Duração, em minutos, da deslocação na Carris na carreira A2
+
+$X_{C_3}$ - Duração, em minutos, da deslocação na Carris na carreira A3
+
+$X_{ML}$ - Duração, em minutos, da deslocação no Metropolitano
+
+$X_{E_1}$ - Tempo de deslocação a pé e espera entre transportes na alternativa 1
+
+$X_{E_2}$ - Tempo de deslocação a pé e espera entre transportes na alternativa 2
+:::
+
+<br> Todas estas variáveis aleatórias seguem uma distribuição Normal como é referido no enunciado. <br> E portanto, através da tabela, podemos formalizar as suas distribuições:
+
+$$X_{C_1} ​​\sim N(\mu = 19, \space \sigma = 4)$$
+
+$$X_{C_2} \sim N(\mu = 10, \space \sigma = 4)$$
+
+$$X_{C_3} \sim N(\mu = 10, \space \sigma = 5)$$
+
+$$X_{ML} \sim N(\mu = 5, \space \sigma = 1)$$
+
+$$X_{E_1} \sim N(\mu = 7, \space \sigma = 3)$$
+
+$$X_{E_2} \sim N(\mu = 10, \space \sigma = 3)$$
+
+As variáveis aleatórias $X_{A_1}$ e $X_{A_2}$ representam o tempo total necessário para efetuar o percurso em cada uma das referidas alternativas, ou seja, corresponderão à soma do tempo demorado em cada uma das etapas do percurso tomado (Carris, Metropolitano) e do tempo de espera entre as etapas.
+
+Assim,
+
+$$X_{A_1}  = X_{C_1} + X_{E_1}+ X_{ML}$$
+
+$$e$$
+
+$$X_{A_2}= X_{C_2} + X_{E_2} + X_{C_3}$$
+
+Como todas as variáveis envolvidas seguem uma distribuição Normal e são independentes, e sabendo, pelo <i>Teorema da Aditividade da Normal</i>, que a soma de variáveis aleatórias normais independentes também é uma variável aleatória normal, as distribuições de $X_{A_1}$ e $X_{A_2}$ seguirão distribuições normais com médias e variâncias dadas pela soma das médias e pela raiz quadrada da soma das variâncias das variáveis envolvidas.
+
+A média de $X_{A_1}$ será:
+
+$$
+\begin{split}
+\mu_{A_1} & = \mu_{C_1} + \mu_{E_1} + \mu_{ML} \\
+& = 19 + 7 + 5 \\
+& = 31
+\end{split}
+$$
+
+e o desvio-padrão é dado por:
+
+$$
+\begin{split}
+\sigma_{A_1} & = \sqrt{\sigma_{C_1}^2 + \sigma_{E_1}^2 + \sigma_{ML}^2} \\
+& = \sqrt{4^2 + 1^2 + 3^2} \\
+& = \sqrt{16 + 9 + 1} \\
+& = \sqrt{26}
+\end{split}
+$$
+
+Ficando assim modelizada:
+
+$$ X_{A_1} \sim N(\mu = 31, \space \sigma = \sqrt{26}) $$ <br>
+
+Para a variável $X_{A_2}$, a sua média será:
+
+$$
+\begin{split}
+\mu_{A_2} & = \mu_{C_2} + \mu_{E_2} + \mu_{C_3} \\
+& = 10 + 10 + 10 \\    
+& = 30
+\end{split}
+$$
+
+e o desvio-padrão:
+
+$$
+\begin{split}
+\sigma_{A_2} & = \sqrt{\sigma_{C_2}^2 + \sigma_{E_2}^2 + \sigma_{C_3}^2} \\
+& = \sqrt{4^2 + 3^2 + 5^2} \\
+& = \sqrt{16 + 9 + 25} \\
+& = \sqrt{50}
+\end{split}
+$$
+
+Ficando modelizada por: $$ X_{A_2} \sim N(\mu = 30, \space \sigma = \sqrt{50}) $$
+
+<br>
+
+<hr>
+
+<br>
+
+2.  **Está em A, e faltam 32 minutos para a hora que marcou para um encontro no local B. Qual a sua melhor aposta em termos de percurso? Formalize e fundamente convenientemente a sua resposta.**
+
+O objetivo é encontrar qual das duas alternativas tem a maior probabilidade de o percurso não exceder os 32 minutos restantes, pois esse é o tempo disponível até ao encontro no local B.
+
+Para isso calcularemos $P(X_{A_1} \leq 32)$ e $P(X_{A_2} \leq 32)$. A que tiver maior valor será a melhor aposta para chegar a horas ao local B.
+
+Em R temos:
+
+```{r}
+# Alternativa 1
+mu_A1 <- 31  # Média de X_A1
+sigma_A1 <- sqrt(26)  # Desvio padrão de X_A1 
+
+# Alternativa 2
+mu_A2 <- 30  # Média de X_A2
+sigma_A2 <- sqrt(50)  # Desvio padrão de X_A2 
+
+# Calcular as probabilidades de chegar a tempo (<= 32 minutos)
+P_A1 <- pnorm(q = 32, mean = mu_A1, sd = sigma_A1)
+P_A2 <- pnorm(q = 32, mean = mu_A2, sd = sigma_A2)
+
+P_A1
+P_A2
+
+```
+
+Como $P(X_{A_2} \leq 32) > P(X_{A_1} \leq 32)$, significa que a probabilidade de chegar ao local B sem exceder o tempo limite é maior optando pela alternativa 2 (A2), logo a **alternativa 2 (A2)** será a melhor aposta.
+
+<br>
+
+<hr>
+
+<br>
+
+3.  **E se faltarem 38 minutos para a hora marcada, a melhor decisão será a mesma que indicou anteriormente? Formalize e fundamente convenientemente a sua resposta.**
+
+Tal como na alínea anterior o objetivo é encontrar qual das duas alternativas tem a maior probabilidade de o percurso não exceder os 38 minutos restantes, pois esse é o tempo disponível até ao encontro no local B.
+
+Para isso calcularemos $P(X_{A_1} \leq 38)$ e $P(X_{A_2} \leq 38)$. A que tiver maior valor será a melhor aposta para chegar a horas ao local B.
+
+Em R temos:
+
+```{r}
+# Calcular as probabilidades de chegar a tempo (<= 38 minutos)
+P_A1 <- pnorm(q = 38, mean = mu_A1, sd = sigma_A1)
+P_A2 <- pnorm(q = 38, mean = mu_A2, sd = sigma_A2)
+
+P_A1
+P_A2
+```
+
+Contrariamente à alinea anterior, a faltar 38 minutos para o encontro a **alternativa A1** torna-se a mais indicada pois $P(X_{A_1} \leq 38) > P(X_{A_2} \leq 38)$.
+
+Essa mudança está relacionada com as médias e os desvios padrão das distribuições. <br><br> Com o aumento do tempo disponível para 38 minutos, a **Alternativa 1 (A1)** oferece uma maior probabilidade de completarmos o percurso dentro do tempo, devido ao **menor desvio padrão**, o que faz com que os tempos de viagem fiquem mais concentrados em torno da média de 31 minutos.<br>
+
+Já a **Alternativa 2 (A2)**, apesar de ter uma média ligeiramente menor (30 minutos), apresenta uma maior dispersão devido ao **desvio padrão maior** (7.07 minutos), o que aumenta a variabilidade e a chance de ultrapassar o limite de 38 minutos.
+
+<br>
+
+<hr>
+
+<br>
+
+4.  **Simule uma observação da alternativa A1 e uma observação da alternativa A2, reportando em cada um dos casos o tempo de cada meio de transporte e o tempo de espera e deslocação entre transportes, para além do tempo total do percurso em cada uma das alternativas.**
+
+Para simular uma observação de cada alternativa, usaremos a função `rnorm()` em R, que gera variáveis aleatórias a partir de distribuições normais com médias e desvios padrão específicos. Simularemos o tempo de cada meio de transporte (Carris, Metropolitano) e tempo de espera entre os mesmos para ambas as alternativas (A1 e A2). De seguida calculamos o tempo total do percurso, somando o valores de cada simulação.
+
+```{r}
+set.seed(123) # Nota: -----------------------------------------
+              # para reprodutibilidade - isto é:               |
+              # para que os resultados sejam sempre os mesmos  |
+              # mesmo ao partilhar este ficheiro               |
+              # -----------------------------------------------e
+
+# Médias e desvios padrão para cada variável
+# Alternativa 1
+mu_XC1 <- 19
+sigma_XC1 <- 4
+mu_XML <- 5
+sigma_XML <- 1
+mu_XE1 <- 7
+sigma_XE1 <- 3
+
+# Alternativa 2
+mu_XC2 <- 10
+sigma_XC2 <- 4
+mu_XC3 <- 10
+sigma_XC3 <- 5
+mu_XE2 <- 10
+sigma_XE2 <- 3
+
+# Simular uma observação para cada alternativa
+
+# Alternativa 1 (A1)
+XC1_A1 <- rnorm(n = 1, mean = mu_XC1, sd = sigma_XC1)
+XML_A1 <- rnorm(n = 1, mean = mu_XML, sd = sigma_XML)
+XE1_A1 <- rnorm(n = 1, mean = mu_XE1, sd = sigma_XE1)
+
+# tempo total do percurso da alternativa 1
+total_A1 <- XC1_A1 + XE1_A1 + XML_A1
+
+# Alternativa 2 (A2)
+XC2_A2 <- rnorm(n = 1, mean = mu_XC2, sd = sigma_XC2)
+XC3_A2 <- rnorm(n = 1, mean = mu_XC3, sd = sigma_XC3)
+XE2_A2 <- rnorm(n = 1, mean = mu_XE2, sd = sigma_XE2)
+
+# tempo total do percurso da alternativa 2
+total_A2 <- XC2_A2 + XE2_A2 + XC3_A2
+```
+
+Reportando os resultados de cada simulação, através de uma tabela, onde inserimos os resultados diretamente com o comando \``r`\`, temos:
+
+<br>
+
+<h5 style="text-align: center;">
+
+Alternativa 1 (A1):
+
+</h5>
+
+| Variável Aleatória | Tempo (em minutos) |
+|:--------------------------|:-------------------------------------------:|
+| $X_{C_1}$ - <i>Tempo na Carris (Carreira 1):</i> | $\approx$ `r round(XC1_A1, 1)` |
+| $X_{ML}$ - <i>Tempo no Metropolitano:</i> | $\approx$ `r round(XML_A1, 1)` |
+| $X_{E_1}$ - <i>Tempo de deslocação e espera:</i> | $\approx$ `r round(XE1_A1, 1)` |
+| $X_{A_1}$ - <i>Tempo total do percurso:</i> | $\approx$ `r round(total_A1, 1)` |
+
+<br> <br>
+
+<h5 style="text-align: center;">
+
+Alternativa 2 (A2):
+
+</h5>
+
+| Variável Aleatória | Tempo (em minutos) |
+|:--------------------------|:-------------------------------------------:|
+| $X_{C_2}$ - <i>Tempo na Carris (Carreira 2):</i> | $\approx$ `r round(XC2_A2, 1)` |
+| $X_{C_3}$ - <i>Tempo na Carris (Carreira 3):</i> | $\approx$ `r round(XC3_A2, 1)` |
+| $X_{E_2}$ - <i>Tempo de deslocação e espera:</i> | $\approx$ `r round(XE2_A2, 1)` |
+| $X_{A_2}$ - <i>Tempo total do percurso:</i> | $\approx$ `r round(total_A2, 1)` |
+
+<br>
+
+<hr>
+
+<br>
+
+5.  **Simule 1000 observações de cada uma das alternativas, [gerando os tempos de cada um dos transportes separadamente, mas guardando apenas o tempo total do percurso]{.underline} em cada uma das alternativas. Com base nessas simulações, reporte o número de observações que permitiram o utilizador chegar a horas na situação da questão 2, e na situação da questão 3. Comente, comparando com as respostas a que chegou nessas questões.**
+
+Para responder a esta questão, vamos simular 1000 observações para cada alternativa, calculando o tempo total do percurso em cada uma delas. De seguida, vamos contar o número de observações em que o utilizador chega a horas, ou seja, em que o tempo total do percurso é menor ou igual ao tempo disponível para chegar ao encontro em cada uma das situações.
+
+Vamos usar a função `replicate()` para simular 1000 observações para cada alternativa. <br> Esta função, abordada em aula, é útil neste caso porque simplifica o processo e podemos encapsular todo o processo de simulação dentro dela para gerar várias observações de forma eficiente e concisa. <br> Ela permite repetir uma expressão várias vezes. Neste caso, vamos repetir a simulação de <u>uma observação para cada alternativa</u> 1000 vezes.
+
+Como temos de guardar apenas o tempo total do percurso em cada alternativa, vamos somar os tempos de cada meio de transporte e de espera entre eles para obter o tempo total do percurso em cada alternativa.
+
+Tendo em conta todas as variáveis anteriormente definidas, o código em R é o seguinte:
+
+```{r}
+# Simular 1000 observações para cada alternativa
+
+set.seed(123) # Reprodutibilidade dos resultados
+
+# 1000 observações para a Alternativa 1 (A1)
+simul_A1 <- replicate(n = 1000, expr = sum(
+    rnorm(n = 1, mean = mu_XC1, sd = sigma_XC1),
+    rnorm(n = 1, mean = mu_XE1, sd = sigma_XE1),
+    rnorm(n = 1, mean = mu_XML, sd = sigma_XML)
+))
+
+
+# 1000 observações para a Alternativa 2 (A2)
+simul_A2 <- replicate(n = 1000, expr = sum(
+    rnorm(n = 1, mean = mu_XC2, sd = sigma_XC2),
+    rnorm(n = 1, mean = mu_XE2, sd = sigma_XE2),
+    rnorm(n = 1, mean = mu_XC3, sd = sigma_XC3)
+))
+
+
+# Alínea 2 ---------------------------------------------------------------------------
+
+# Número de observações em que o utilizador chega a horas (tempo total <= 32 minutos)
+chegar_a_horas_A1_32 <- sum(simul_A1 <= 32)
+chegar_a_horas_A2_32 <- sum(simul_A2 <= 32)
+
+
+# Alínea 3 ---------------------------------------------------------------------------
+
+# Número de observações em que o utilizador chega a horas (tempo total <= 38 minutos)
+chegar_a_horas_A1_38 <- sum(simul_A1 <= 38)
+chegar_a_horas_A2_38 <- sum(simul_A2 <= 38)
+
+```
+
+<br>
+
+Na simulação de 1000 observações para cada alternativa, obtivemos os seguintes resultados para as questões 2 e 3:
+
+<br>
+
+<h5 style="text-align: center;">
+
+Questão 2
+
+</h5>
+
+<p style="text-align: center;">
+
+Número de observações em que o utilizador chega a horas com 32 minutos disponíveis:
+
+</p>
+
+| Alternativa 1 (A1) | Alternativa 2 (A2) |
+|:----------------------------------:|:----------------------------------:|
+| `r chegar_a_horas_A1_32` de 1000 observações | `r chegar_a_horas_A2_32` de 1000 observações |
+
+<br> <br>
+
+<h5 style="text-align: center;">
+
+Questão 3
+
+</h5>
+
+<p style="text-align: center;">
+
+Número de observações em que o utilizador chega a horas com 38 minutos disponíveis:
+
+</p>
+
+| Alternativa 1 (A1) | Alternativa 2 (A2) |
+|:----------------------------------:|:----------------------------------:|
+| `r chegar_a_horas_A1_38` de 1000 observações | `r chegar_a_horas_A2_38` de 1000 observações |
+
+<br>
+
+Comparando com as respostas obtidas nas questões 2 e 3, podemos concluir que os resultados obtidos na simulação são consistentes com as respostas anteriores.
+
+Na **alínea 2**, onde o tempo disponível era de 32 minutos, a **Alternativa 2 (A2)** era a melhor escolha devido à maior chance de chegar a horas ao encontro, o que é confirmado pela simulação (`r chegar_a_horas_A2_32` observações contra `r chegar_a_horas_A1_32` da A1).
+
+Na **alínea 3**, onde o tempo disponível foi alterado para 38 minutos, a **Alternativa 1 (A1)** tornou-se a melhor escolha, o que também é confirmado pela simulação (`r chegar_a_horas_A1_38` observações contra `r chegar_a_horas_A2_38` da A2).
+
+A simulação confirma que o aumento do tempo disponível afeta diretamente a probabilidade de sucesso de cada alternativa, validando as conclusões anteriores.

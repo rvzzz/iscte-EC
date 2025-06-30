@@ -1,0 +1,292 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC05 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC05
+
+#### **Em cada exercício**
+
+1.  Defina teoricamente a variável aleatória de interesse.
+
+2.  Especifique teoricamente o modelo probabilístico em causa.
+
+3.  Explicite teoricamente a probabilidade pedida.
+
+4.  Calcule a probabilidade pedida, recorrendo a funções R apropriadas.
+
+<hr>
+
+<br>
+
+### Enunciado
+
+#### P1.
+
+Em certa casa foi contratada à EDP uma potência elétrica de 3,45 KW. Se, em determinado momento, o consumo for superior a esse limite, o quadro geral de eletricidade dispara, sendo interrompido o fornecimento de energia.
+
+No Inverno, os habitantes desse lar compraram um radiador elétrico cujo consumo se comporta de forma aproximadamente Normal, com uma média de 2KW e um desvio-padrão de 0,5KW.
+
+<br>
+
+<hr>
+
+<br>
+
+Seja $X$ a variável aleatória que representa o consumo elétrico (em kW) desse radiador num certo momento aleatório.
+
+De acordo com o enunciado, o consumo do radiador segue, de forma aproximada, uma distribuição Normal com média $\mu = 2kW$ e desvio-padrão $\sigma = 0,5kW$, temos que: $$X \sim N(\mu = 2, \sigma = 0.5)$$ <br>
+
+<b>1. Qual a probabilidade do consumo desse radiador ser inferior a 2,8KW?</b>
+
+Pretendemos encontrar $P(X < 2.8)$. Esta probabilidade representa a área sob a curva da função de densidade de probabilidade da distribuição Normal $N(2, 0.5)$ à esquerda de 2,8.
+
+<u>*i) Determine este valor exatamente*</u>
+
+Vamos calcular o valor exato da probabilidade, utilizando a função de distribuição acumulada da distribuição Normal no R, `pnorm()`, que calcula a probabilidade acumulada para uma determinada distribuição Normal.
+
+Relembrando que, em distribuições contínuas, a probabilidade de $X < a$ e $X \leq a$ são equivalentes, uma vez que $P(X = a) = 0$. Ou seja, a probabilidade pontual é nula. Deste modo podemos calcular $P(X \leq 2.8)$ e obter o mesmo resultado.
+
+```{r}
+# calcular P(X < 2.8) <=> P(X <= 2.8)
+p_X_menor_que_2.8 <- pnorm(q = 2.8, mean = 2, sd = 0.5)
+
+# visualizar
+p_X_menor_que_2.8
+```
+
+Assim, a probabilidade do consumo desse radiador ser inferior a 2,8kW é de **`r round(p_X_menor_que_2.8, 3)`**.
+
+<u>*ii) Obtenha uma aproximação a este valor com base numa simulação de 1000 pedidos*</u>
+
+Neste ponto vamos fazer uma aproximação com base numa simulação de 1000 observações. <br> Para isso, e com recurso à função `rnorm()`, podemos gerar 1000 valores aleatórios de uma distribuição Normal com média de 2 e desvio-padrão de 0,5 e depois calcular a proporção de valores que são menores que 2,8.<br> Essa proporção será uma aproximação da probabilidade que encontrámos em <u>*i)*</u>.
+
+Em R, o código para fazer essa simulação é:
+
+```{r}
+set.seed(12) # Nota: -----------------------------------------
+             # para reprodutibilidade - isto é:               |
+             # para que os resultados sejam sempre os mesmos  |
+             # mesmo ao partilhar este ficheiro               |
+             # -----------------------------------------------
+
+num_total_de_observacoes <- 1000
+
+# simulação de 1000 observações
+simulacao <- rnorm(n = num_total_de_observacoes, mean = 2, sd = 0.5)
+
+# proporção dos valores menores que 2.8 existentes na simulação
+proporcao_para_X_menor_que_2.8 <- sum(simulacao < 2.8) / num_total_de_observacoes
+
+# outra forma possível de calcular a proporção usando a função mean()
+proporcao_para_X_menor_que_2.8 <- mean(simulacao < 2.8)
+
+# visualizar
+proporcao_para_X_menor_que_2.8
+```
+
+Constatamos que ambos os valores (o valor exato e a proporção agora calculada) são muito próximos, o que nos dá confiança na nossa aproximação realizada pela simulação.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>2. Qual o menor valor do consumo do radiador, nas 5% de vezes onde o consumo é mais elevado?</b>
+
+Para resolver este problema, estamos interessados em encontrar o menor valor do consumo do radiador que fica entre os 5% valores mais elevados de consumo. Este é um quantil de ordem 0,95 (ou o quantil 95%) da distribuição, pois estamos a considerar os valores acima dos 95% inferiores.
+
+Portanto, pretendemos encontrar $q$ tal que
+
+$$
+\begin{split}
+P(X > q) & = 0.05 \\
+ \Leftrightarrow P(X \leq q) & = 0.95
+\end{split}
+$$
+
+<u>*i) Determine este valor exatamente*</u>
+
+Em R, a função `qnorm()` calcula o quantil de uma distribuição normal.
+
+```{r}
+# calcular o quantil de ordem 0.95
+qnorm(p = 0.95, mean = 2, sd = 0.5)  # P(X <= q) = 0.95
+
+# ou de forma equivalente
+qnorm(p = 0.05, mean = 2, sd = 0.5, lower.tail = FALSE)  # P(X > q) = 0.05
+```
+
+Portanto, o menor valor do consumo do radiador, nas 5% de vezes onde o consumo é mais elevado, é de **`r round(qnorm(p = 0.95, mean = 2, sd = 0.5), 3)`**.
+
+<u>*ii) Obtenha uma aproximação a este valor com base numa simulação de 1000 pedidos*</u>
+
+Para resolver este ponto vamos gerar 1000 valores aleatórios da distribuição normal com média 2 e desvio-padrão 0.5 e de seguida ordenaremos esses valores a fim de seleccionar o valor que corresponde ao percentil 95% (ou seja, o valor que tem exatamente 95% dos dados abaixo dele).
+
+```{r}
+set.seed(12) # para reprodutibilidade
+             
+# simulação de 1000 observações
+simulacao <- rnorm(n = 1000, mean = 2, sd = 0.5)
+
+# ordenar os valores
+simulacao_ordenada <- sort(simulacao)
+
+# obter o valor correspondente ao percentil 95%
+simulacao_ordenada[950]  # 1000 * 0.95 = 950
+
+
+# outra forma possível para obter o valor correspondente ao percentil 95%:
+# ---------------------------------------------------------------------------------------------
+# com a função quantile() - que foi usada no exercício 4 alínea d) dos exercícios no Moodle    |
+# sobre V.A. Contínuas - obtemos o mesmo valor e em seguida usamos [[1]] para obter o valor    |
+# diretamente pois ela devolve uma lista                                                       |
+# ---------------------------------------------------------------------------------------------
+quantile(simulacao, 0.95)[[1]]
+```
+
+Assim, verificamos que o valor obtido pela simulação é muito próximo do valor exato calculado anteriormente.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>3. Em dado momento, encontram-se ligados um conjunto de dispositivos com consumo constante e igual a 0.5kW. Foi ligado o radiador.</b>
+
+<u>*i) Qual a probabilidade de o quadro disparar?*</u>
+
+Sabendo que o quadro elétrico dispara quando é ultrapassado um consumo de **3,45kW** e que o conjunto de dispositivos tem um consumo constante e igual a **0.5kW**, o radiador terá de ter um consumo superior a $3,45 - 0,5 = 2,95$ para o quadro disparar, ou seja: $$P(X > 2,95) = 1 - P(X \leq 2,95)$$
+
+Para descobrir esse valor, podemos usar a função de distribuição acumulada da distribuição normal.
+
+Em R, temos:
+
+```{r}
+# calcular 1 - P(X <= 2.95)
+p_X_maior_que_2.95 <- 1 - pnorm(q = 2.95, mean = 2, sd = 0.5)
+
+# ou de forma equivalente
+p_X_maior_que_2.95 <- pnorm(q = 2.95, mean = 2, sd = 0.5, lower.tail = FALSE)
+
+# visualizar
+p_X_maior_que_2.95
+```
+
+Assim, a probabilidade de o quadro disparar é de **`r round(p_X_maior_que_2.95, 3)`**.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>4. Em 30 dias (1 mês) na situação descrita em 3, qual a probabilidade do quadro disparar pelo menos em um desses dias?</b>
+
+Iremos precisar de calcular a probabilidade de o quadro disparar pelo menos uma vez em 30 dias.
+
+Dado que o consumo do radiador quando é ligado num determinado dia é independente do consumo nos outros dias, e que os consumos são independentes de dia para dia, podemos considerar que o quadro disparará em cada dia de forma independente.
+
+Para o âmbito que queremos estudar, o facto do quadro disparar é um caso de "sucesso" e o consumo do radiador ser superior a 2,95 kW é o evento de interesse em pelo menos um dos 30 dias. Ou seja, estamos perante 30 ensaios de Bernoulli independentes.
+
+<u>*i) Defina a variável aleatória de interesse*</u>
+
+Vamos definir uma variável aleatória $Z$ que representa o número de dias em que o quadro dispara em 30 dias.
+
+Reforçando, o modelo probabilístico que melhor se ajusta a esta situação é o modelo binomial, pois podemos verificar as características que definem esta distribuição:
+
+-   <u>*Número fixo de provas*</u>: a amostra é fixa, com 30 dias.
+
+-   <u>*Dois resultados possíveis em cada prova*</u>: em cada dia o quadro pode disparar (sucesso) ou não disparar (insucesso).
+
+-   <u>*Probabilidade constante de sucesso*</u>: A probabilidade de sucesso (quadro disparar num certo dia) é $p = 0.02871656$ e é a mesma em todos os dias.
+
+-   <u>*Independência entre provas*</u>: O facto de o quadro disparar num certo dia não influencia a probabilidade de o quadro disparar em outro dia.
+
+Assim, o número de dias em que o quadro dispara em 30 dias segue uma distribuição binomial com parâmetros $n = 30$ e $p = P(X > 2.95)$, onde $X$ é a variável aleatória que representa o consumo do radiador e foi definida anteriormente.
+
+Logo, teremos que $Z \sim Bi(n = 30, p = P(X > 2.95))$.
+
+<u>*ii) Represente graficamente a respetiva função de probabilidade*</u>
+
+```{r}
+# criar um vetor com os valores possíveis de Z
+valores_possiveis_de_Z <- 0:30
+
+# calcular a função de probabilidade de Z
+funcao_de_probabilidade_de_Z <- dbinom(
+                                     x = valores_possiveis_de_Z, 
+                                     size = 30, 
+                                     prob = p_X_maior_que_2.95
+                                )
+
+# gráfico da função de probabilidade de Z
+plot(
+    x = valores_possiveis_de_Z,
+    y = funcao_de_probabilidade_de_Z,
+    type = "h",
+    lwd = 6,
+    col = "blue",
+    xlab = "Número de dias em que o quadro dispara em 30 dias",
+    ylab = "Probabilidade",
+    main = "Função de probabilidade de Z"
+)
+
+```
+
+<u>*iii) Especifique teoricamente a probabilidade pretendida e calcule-a*</u>
+
+Pretendemos calcular a probabilidade de o quadro disparar **pelo menos uma vez** em 30 dias, ou seja, $P(Z \geq 1)$. <br>
+
+<u>*i) de forma exata*</u>
+
+Assim, $P(Z \geq 1) = 1 - P(Z < 1) = 1 - P(Z \leq 0)$:
+
+```{r}
+# calcular P(Z >= 1)
+p_Z_maior_ou_igual_a_1 <- 1 - pbinom(0, size = 30, prob = p_X_maior_que_2.95)
+
+# visualizar
+p_Z_maior_ou_igual_a_1
+```
+
+Assim, a probabilidade de o quadro disparar pelo menos uma vez em 30 dias é de **`r round(p_Z_maior_ou_igual_a_1, 3)`.**
+
+<u>*ii) de forma aproximada, recorrendo a uma simulação de 1000 meses (de 30 dias cada)*</u>
+
+Para isso, vamos simular 1000 meses (de 30 dias cada) e calcular a proporção de meses em que o quadro dispara pelo menos uma vez.
+
+```{r}
+set.seed(12)
+
+num_total_de_meses <- 1000
+
+# simulação de 1000 meses
+simulacao <- rbinom(n = num_total_de_meses, size = 30, prob = p_X_maior_que_2.95)
+
+
+
+# proporção de meses em que o quadro dispara pelo menos uma vez
+proporcao_para_Z_maior_ou_igual_a_1 <- sum(simulacao >= 1) / num_total_de_meses
+
+# visualizar
+proporcao_para_Z_maior_ou_igual_a_1
+
+
+```
+
+Pela simulação, obtemos uma aproximação da probabilidade de o quadro disparar pelo menos uma vez em 30 dias. Verifica-se que o valor obtido pela simulação é muito próximo do valor exato calculado anteriormente o que sustenta e valida os valores obtidos.

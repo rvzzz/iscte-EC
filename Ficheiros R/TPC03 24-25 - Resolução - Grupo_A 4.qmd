@@ -1,0 +1,407 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC03 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC03
+
+A procura de bolos de aniversário numa pastelaria pode ser descrita por uma variável aleatória, $X$, com o seguinte comportamento:
+
+$$
+f(x)=\left \{ \begin{matrix} 0.05 & x=1 \\  \frac{1}{x^2-x} & x =2, 3, ..., 20 \ \end{matrix} \right.
+$$
+
+<br>
+
+<hr>
+
+<br>
+
+<b>1. Justifique que a função apresentada pode de facto ser considerada uma função de probabilidade.</b>
+
+Para que $f(x)$ seja uma função de probabilidade, ela deve satisfazer duas condições:
+
+-   <u>*Os valores de* $f(x)$ devem estar compreendidos entre 0 e 1:</u> $$0 \leq f(x) \leq 1  \ \  \text{ para todos os valores de } x$$
+    -   $0 \leq f(1) = 0.05 \leq 1$ (compreendido entre 0 e 1).
+    -   Para $x = 2, 3, \dots, 20$, $\space \space  0 \leq f(x) = \frac{1}{x^2 - x} \leq 1$ (compreendido entre 0 e 1).
+
+<p>
+
+</p>
+
+-   <u>*Soma das probabilidades ser igual a 1:*</u>
+
+    A soma das probabilidades para todos os valores possíveis de $x$ deve ser igual a 1. Isto significa que:
+
+    $$
+        \sum_{x=1}^{20} f(x) = 1
+        $$
+
+Vamos então verificar, através da linguagem R, se a função $f(x)$ satisfaz essas duas condições para ser uma função de probabilidade.
+
+Para isso, vamos definir a função $f(x)$ em R através do `function()`:
+
+```{r}
+f_x <- function(x) {
+    if (x == 1) {
+        prob <- 0.05  # f(1)
+    } else if (x %in% 2:20) {  # o operador %in% verifica se x está na sequência 2, 3,..., 20
+        prob <- 1 / (x^2 - x)  # f(x) para x = 2, 3, ..., 20
+    } else {
+        prob <- 0  # probabilidade nula fora do intervalo
+    }
+    return(prob)
+}
+```
+
+Para verificar a 1ª condição, vamos calcular $f(x)$ para todos os valores de $x$, em que $x=1, 2, 3, ..., 20$, e verificar se todos os valores estão compreendidos entre 0 e 1. <br> Em R, podemos fazer isso usando a função `sapply()` que permite aplicar a função $f(x)$ a cada um dos valores do seu domínio $([1,20])$ e retorna um vetor com os valores das probabilidades. Com esse vetor, podemos verificar se todos os valores estão compreendidos entre 0 e 1 realizando comparações lógicas. <br> Depois usamos a função `all()` para verificar se realmente todos os valores estão compreendidos entre 0 e 1. O código é o seguinte:
+
+```{r}
+verificar_1a_condicao <- all(                      # nota: ------------------------
+                         sapply(1:20, f_x) >= 0 &  # all() verificará se todas as  |
+                         sapply(1:20, f_x) <= 1    # probabilidades retornadas por |
+                      )                            # f_x(x) para x=1 até x=20 são  | 
+                                                   # maiores ou iguais a zero e    |
+                                                   # menores ou iguais a 1         |
+                                                   # ------------------------------
+# visualizar valor booleano retornado por all()
+verificar_1a_condicao
+```
+
+Portanto a 1ª condição verifica-se, pois todos os valores de $f(x)$ estão compreendidos entre 0 e 1.
+
+Para confirmar a 2ª condição, vamos calcular a soma das probabilidades e verificar o resultado.
+
+```{r}
+# calcular a soma das probabilidades f(x) para x = 1, 2, 3, ..., 20
+verificar_2a_condicao <- sum(sapply(1:20, f_x))
+
+# visualizar resultado
+verificar_2a_condicao
+```
+
+Como o resultado foi igual a 1, a 2ª condição também se verifica, o que nos permite concluir e afirmar que $f(x)$ é de facto uma função de probabilidade.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>2. Defina uma função em que permita obter, para qualquer $x$ real, a probabilidade de ocorrência de $x$. Use essa função para obter um vetor com os valores da função calculados nos pontos de probabilidade não nula.</b>
+
+A função pedida - <u>*função de probabilidade*</u> - foi definida anteriormente (`f_x`) para verificar as duas condições de uma função de probabilidade. Essa função permite obter a probabilidade de ocorrência de $x$ para qualquer $x$ real.
+
+Se o valor de $x$ for um ponto em que a probabilidade é não nula (isto é, $x = 1$, $x = 2$, $x = 3$, ..., $x = 20$), a função de probabilidade $f(x)$ calcula diretamente a probabilidade de ocorrência de $x$. Caso contrário, a probabilidade é considerada nula (retorna o valor zero).
+
+Para obter um vetor com os valores da função calculados nos pontos de probabilidade não nula, podemos novamente usar a função `sapply()` para calcular $f(x)$ com $x = 1, 2, 3, ..., 20$ e armazenar os valores numa variável:
+
+```{r}
+# vetor com os valores da função calculados nos pontos de probabilidade não nula
+probabilidades_nao_nulas <- sapply(1:20, f_x)
+
+# visualizar
+probabilidades_nao_nulas
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>3. Represente graficamente a função de probabilidade.</b>
+
+Para representar a função de probabilidade recorremos às funções `plot()` e `points()`.
+
+```{r}
+# criar um vetor para os valores de x
+x_vals <- 1:20
+
+# usar para o eixo y os valores encontrados na alínea anterior
+y_vals <- probabilidades_nao_nulas
+
+# criar o gráfico da função de probabilidade
+plot(
+    main = "Função de Probabilidade",  # título do gráfico
+    # valores e rótulos dos eixos x e y ---------------------------
+    x = x_vals,
+    y = y_vals,
+    xlab = "x",
+    ylab = "f(x)",
+    # outros parâmetros do gráfico --------------------------------
+    type = "h",  # tipo de gráfico (h = histograma)
+    las = 1,     # orientação dos rótulos do eixo x (1=horizontal)
+    lwd = 2,     # largura das linhas do gráfico
+    col = "blue" # cor das linhas do gráfico
+)
+
+# adicionar pontos para indicar os valores das probabilidades
+points(
+    x = x_vals, 
+    y = y_vals, 
+    col = "red", 
+    pch = 16  # pch significa "plot character" e 16 é um círculo
+) 
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>4. Obtenha a função de distribuição, $F(x)$, nos pontos de probabilidade não nula de $X$.</b>
+
+Para obter a função de distribuição, $F(x)$, nos pontos de probabilidade não nula de $X$, temos de calcular a soma cumulativa das probabilidades $f(x)$ para cada valor de $x$ com $x = 1, 2, 3, ..., 20$.
+
+A função de distribuição $F(x)$ é definida por: $$
+F(x) = P(X \leq x) = \sum_{i=1}^{x} f(i)
+$$
+
+Em R, obtemos a distribuição acumulada $F(x)$ nos pontos de probabilidade não nula de $X$ da seguinte forma:
+
+```{r}
+# distribuição acumulada F(x) nos pontos de probabilidade não nula de X
+probabilidades_acumuladas <- cumsum(probabilidades_nao_nulas)
+
+# visualizar
+probabilidades_acumuladas
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>5. Defina uma função em $\mathbb{R}$ que permita obter, para qualquer $x$ real, o valor da função de distribuição de $X$, $F(x)$, nesse ponto.</b>
+
+Para obter o valor da função de distribuição acumulada $F(x)$ para qualquer $x$ real, podemos definir uma função em R que utilize a função `stepfun` para criar uma função de patamares a partir dos valores de $x$ e das probabilidades acumuladas:
+
+```{r}
+# definir a função de distribuição acumulada F(x)
+F_x <- stepfun(
+    x = x_vals,
+    y = c(0, probabilidades_acumuladas), # pôr 0 no início do vetor de probabilidades acumuladas
+    right = FALSE  # indica se o intervalo é fechado à direita (FALSE = aberto à direita)
+) 
+```
+
+Assim, a função `F_x` pode ser usada para obter o valor da função de distribuição acumulada $F(x)$ para qualquer $x$ real. Por exemplo, para obter $F(x)$ para $x = 2$ e $x = 2.5$, podemos fazer o seguinte:
+
+```{r}
+F_x(2)
+F_x(2.5)
+```
+
+Como esperado, o valor de $F(2)$ é `r F_x(2)` e o valor de $F(2.5)$ é `r F_x(2.5)`, pois a função de distribuição acumulada é constante entre os valores inteiros de $x$.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>6. Represente graficamente a função de distribuição.</b>
+
+Para representar graficamente a função de distribuição $F(x)$, podemos usar a função `plot.stepfun()`:
+
+```{r}
+plot.stepfun(
+    F_x,  # função de distribuição F(x) definida anteriormente
+    main = "Função de Distribuição F(x)",  # título do gráfico
+    # rótulos dos eixos x e y ----------------------------
+    xlab = "x",
+    ylab = "F(x)",
+    # outros parâmetros do gráfico -----------------------
+    col = "blue",       # cor da linha
+    lwd = 2,            # largura da linha
+    verticals = FALSE,  # não desenhar linhas verticais
+    do.points = TRUE,   # desenhar pontos
+    col.points = "red", # cor dos pontos
+    pch = 16            # tipo de ponto (círculo)
+)
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>7. Qual a probabilidade de, em certo dia, a procura de bolos de aniversário ser superior a 5 mas não mais do que 10?
+
+Escrever a probabilidade pretendida em termos da variável aleatória definida, e calculá-la: </b>
+
+A variável aleatória em causa será $X - \text{nº de bolos de aniversário procurados por dia}$, sendo a probabilidade que queremos calcular $P(5 < X \leq 10)$.
+
+<b><u> 7.1. Com recurso à função de probabilidade:</u></b>
+
+A probabilidade pode ser calculada somando as probabilidades associadas aos valores de $X$ entre 6 e 10, ou seja:
+
+$$
+P(5 < X \leq 10) = \sum_{x=6}^{10} f(x) = f(6) + f(7) + f(8) + f(9) + f(10)
+$$
+
+Em R, usando a função `f_x` definida anteriormente, podemos calcular essa probabilidade da seguinte forma:
+
+```{r}
+# calcular a probabilidade de 5 < X <= 10 usando a função de probabilidade f(x)
+probabilidade_5_10 <- sum(sapply(6:10, f_x))
+
+# visualizar
+probabilidade_5_10
+```
+
+<b><u> 7.2. Com recurso à função distribuição:</u></b>
+
+Como a função de distribuição $F(x)$ nos dá a probabilidade de $X$ ser menor ou igual a $x$, a probabilidade de $X$ estar entre 6 e 10 é dada por: $$P(5 < X \leq 10) = P(X \leq 10) - P(X \leq 5) = F(10) - F(5)$$
+
+Em R, podemos calcular essa probabilidade usando a função `F_x` definida anteriormente:
+
+```{r}
+# calcular a probabilidade de 5 < X <= 10 usando a função de distribuição F(x)
+probabilidade_5_10_F_x <- F_x(10) - F_x(5)
+
+# visualizar
+probabilidade_5_10_F_x
+```
+
+Portanto, a probabilidade de, em certo dia, a procura de bolos de aniversário ser superior a 5 mas não mais do que 10 é **`r probabilidade_5_10`**.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>8. Qual a probabilidade de, em certo dia, a procura de bolos de aniversário ser pelo menos 3 e no máximo 8?
+
+Escrever a probabilidade pretendida em termos da variável aleatória definida, e calculá-la, recorrendo à função de distribuição.</b>
+
+Queremos calcular a probabilidade de $P(3 \leq X \leq 8)$, que pode ser calculada como: $$P(X \leq 8) - P(X < 3) = F(8) - F(2)$$
+
+A razão para subtrair $F(2)$ em vez de $F(3)$ é para eliminar a probabilidade dos valores de $x$ que são menores ou iguais a 2, pois estamos a considerar apenas os valores de 3 a 8 (inclusive).
+
+Assim, em R, podemos calcular essa probabilidade usando a função `F_x` definida anteriormente:
+
+```{r}
+# calcular a probabilidade de 3 <= X <= 8 usando a função de distribuição F(x)
+probabilidade_3_8_F_x <- F_x(8) - F_x(2)
+
+# visualizar
+probabilidade_3_8_F_x 
+```
+
+Portanto, a probabilidade de, em certo dia, a procura de bolos de aniversário ser pelo menos 3 e no máximo 8 é **`r probabilidade_3_8_F_x`**.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>9. Qual a probabilidade de, em certo dia, a procura de bolos de aniversário ser superior a 2?
+
+Escrever a probabilidade pretendida em termos da variável aleatória definida, e calculá-la, recorrendo à função de distribuição.</b>
+
+Queremos calcular $P(X > 2)$. Estamos interessados em todos os valores de $X$ que são estritamente maiores que 2. Para isso, devemos subtrair a probabilidade de $X$ ser menor ou igual a 2 da totalidade (que é 1):
+
+Podemos então escrever esta probabilidade como:
+
+$$P(X > 2) = 1 - P(X \leq 2) = 1 - F(2)$$ Em R, podemos calcular essa probabilidade usando a função `F_x` definida anteriormente:
+
+```{r}
+# calcular a probabilidade de X > 2 usando a função de distribuição F(x)
+probabilidade_maior_que_2_F_x <- 1 - F_x(2)
+
+# visualizar
+probabilidade_maior_que_2_F_x
+```
+
+Portanto, a probabilidade de, em certo dia, a procura de bolos de aniversário ser superior a 2 é **`r probabilidade_maior_que_2_F_x`**. <br>
+
+<hr>
+
+<br>
+
+<b>10. Calcular o valor esperado, a variância e o desvio-padrão de X.</b>
+
+-   **Valor Esperado**:
+
+O valor esperado (média) de $X$ é dado por: $$E(X) = \sum_{x=1}^{20} x \cdot f(x)$$
+
+Ou seja, é a soma dos produtos de cada valor de $x$ pela sua probabilidade $f(x)$.
+
+Em R, podemos calcular o valor esperado de $X$ da seguinte forma:
+
+```{r}
+# vetor com os valores de x
+x_vals <- 1:20
+
+# calcular os produtos de x por f(x)
+produtos_x_f_x <- x_vals * probabilidades_nao_nulas
+
+# calcular o valor esperado de X somando os produtos de x por f(x)
+E_X <- sum(produtos_x_f_x)
+
+# visualizar
+E_X
+```
+
+Portanto, o valor esperado de $X$ é **`r E_X`**.
+
+<br>
+
+-   **Variância**:
+
+A variância de $X$ é dada por: $$Var(X) = E(X^2) - [E(X)]^2$$ que consiste na diferença entre a média dos quadrados dos valores de $X$ e o quadrado da média, onde $$E(X^2) = \sum_{x=1}^{20} x^2 \cdot f(x)$$
+
+Em R, temos:
+
+```{r}
+# calcular os produtos de x^2 por f(x)
+produtos_x2_f_x <- x_vals^2 * probabilidades_nao_nulas
+
+# calcular E(X^2)
+E_X2 <- sum(produtos_x2_f_x)
+
+# calcular a variância de X
+variancia <- E_X2 - E_X^2
+
+# visualizar
+variancia
+```
+
+Portanto, a variância de $X$ é **`r variancia`**.
+
+<br>
+
+-   **Desvio-Padrão**:
+
+O desvio-padrão de $X$ é a raiz quadrada da variância: $$\sigma = \sqrt{Var(X)}$$
+
+Em R, simplesmente fazemos:
+
+```{r}
+# calcular o desvio-padrão de X
+desvio_padrao <- sqrt(variancia)
+
+# visualizar
+desvio_padrao
+```
+
+Portanto, o desvio-padrão de $X$ é **`r desvio_padrao`**.

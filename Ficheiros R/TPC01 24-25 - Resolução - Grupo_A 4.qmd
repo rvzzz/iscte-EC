@@ -1,0 +1,170 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC01 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{css echo=FALSE}
+h1 {
+  text-align: center;
+}
+```
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC01
+
+Considere a seguinte experiência aleatória:
+
+Numa tômbola são colocadas 6 bolas, com os números 2, 5, 7, 9, 11 e 15. <br> A tômbola é rodada e procede-se à extração de uma bola. <br>
+
+Numa segunda tômbola são colocadas 5 bolas, com os números 5, 7, 9, 11 e 15. <br> Procede-se de igual forma, extraindo uma bola após rotação. <br>
+
+O resultado da experiência consiste no par (Ext1, Ext2), onde Ext1 é o valor registado na bola extraída da primeira tômbola e Ext2 o valor registado na bola extraída da segunda.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>1. Crie o espaço de resultados para o exercício em causa, com a respetiva probabilidade.</b>
+
+```{r}
+tombola1 <- c(2, 5, 7, 9, 11, 15)
+tombola2 <- c(5, 7, 9, 11, 15)
+
+# espaço de resultados (com todas as combinações possíveis - produto cartesiano)
+espaco_resultados <- expand.grid(Ext1 = tombola1, Ext2 = tombola2)
+
+# visualizar o vetor
+espaco_resultados
+
+# acrescentar uma coluna com as probabilidades de cada resultado
+espaco_resultados$Probabilidade <- rep(1/nrow(espaco_resultados), times = nrow(espaco_resultados))
+
+# visualizar novamente o vetor, agora com a coluna das probabilidades
+espaco_resultados
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>2. Construa o acontecimento A -- "a soma do valor das duas bolas é par". <br>Calcule a probabilidade de ocorrência deste acontecimento.</b>
+
+```{r}
+# o acontecimento será um subconjunto do espaço de resultados, e portanto:
+A <- espaco_resultados[ (espaco_resultados$Ext1 + espaco_resultados$Ext2) %% 2 == 0, ]
+
+# visualizar o vetor
+A
+
+# probabilidade de A
+P_A <- sum(A$Probabilidade)
+
+# visualizar a probabilidade
+P_A
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>3. Construa o acontecimento B -- "a soma do valor das duas bolas é pelo menos 16". <br>Calcule a probabilidade de ocorrência deste acontecimento.</b>
+
+```{r}
+# acontecimento B
+B <- espaco_resultados[ (espaco_resultados$Ext1 + espaco_resultados$Ext2) >= 16, ]
+
+# visualizar o vetor
+B
+
+# probabilidade de B
+P_B <- sum(B$Probabilidade)
+
+# visualizar a probabilidade
+P_B
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>4. Construa, [a partir dos já construídos A e B]{.underline}, o acontecimento "A soma do valor das duas bolas é par e pelo menos 16" e calcule a respetiva probabilidade.</b>
+
+```{r message=FALSE, warning=FALSE}
+# conforme sugerido no final da última aula (20-09-2024) 
+# usaremos o método 'intersect' da biblioteca dplyr
+library(dplyr)
+```
+
+```{r}
+# acontecimento A e B (a partir dos acontecimentos A e B já construídos)
+A_e_B <- intersect(A, B)
+
+# visualizar o vetor
+A_e_B
+
+# probabilidade de A e B
+P_A_e_B <- sum(A_e_B$Probabilidade)
+
+# visualizar a probabilidade
+P_A_e_B
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>5. Construa, [a partir dos já construídos A e B]{.underline}, o acontecimento "A soma do valor das duas bolas é par ou pelo menos 16 e calcule a respetiva probabilidade.</b>
+
+```{r message=FALSE, warning=FALSE}
+# conforme sugerido no final da última aula (20-09-2024) 
+# usaremos o método 'union' da biblioteca dplyr
+library(dplyr)
+```
+
+```{r}
+# acontecimento A ou B (a partir dos acontecimentos A e B já construídos)
+A_ou_B <- union(A, B)
+
+# visualizar o vetor
+A_ou_B
+
+# probabilidade de A ou B
+P_A_ou_B <- sum(A_ou_B$Probabilidade)
+
+# visualizar a probabilidade
+P_A_ou_B
+```
+
+<br>
+
+<hr>
+
+<br>
+
+<b>6. Mostre que se verifica a propriedade da probabilidade de união, $P[A \cup B]=P[A]+P[B]-P[A \cap B]$</b>
+
+```{r}
+# verificar se a propriedade se verifica
+P_A_ou_B == P_A + P_B - P_A_e_B
+```

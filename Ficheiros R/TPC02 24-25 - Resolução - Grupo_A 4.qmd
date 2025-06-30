@@ -1,0 +1,231 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC02 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: inline
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC02
+
+Uma empresa de segurança garante que o alarme contra intrusão que coloca em casa dos clientes efetua uma ligação à central (notificação) em 95% das vezes em que uma intrusão efetivamente ocorre.
+
+Por outro lado, assegura que o risco de falso alarme (ou seja, a central ser notificada, sem ter havido intrusão) é de apenas 3%.
+
+Estima-se um risco de intrusão de 10%, para a área de uma certa residência onde esse alarme foi colocado.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>1.1. Com que probabilidade a central recebe uma notificação de intrusão?</b>
+
+Sejam os acontecimentos:
+
+<b>$I:$</b> "ocorre intrusão"<br> <b>$N:$</b> "alarme notifica central"
+
+Pelo enunciado, temos:
+
+```{r}
+P_N_dado_I <- 0.95      # P(N|I)
+P_N_dado_nao_I <- 0.03  # P(N|~I)
+P_I <- 0.10             # P(I)
+```
+
+Daí, sabemos que a probabilidade de não ocorrer intrusão é dada por $P(\overline{I}) = 1 - P(I) = 0.90$
+
+```{r}
+P_nao_I <- 1 - P_I     # P(~I)
+P_nao_I
+```
+
+<b>$I$</b> e <b>$\overline{I}$</b> são eventos mutuamente exclusivos que formam uma partição do espaço de resultados (ou seja, um dos eventos tem que acontecer, já que ocorre uma intrusão ou não). <br> E portanto, a probabilidade de o alarme notificar a central devido a uma intrusão (seja essa notificação devida a uma efetiva intrusão ou por falso alarme) consiste em aplicar o teorema da probabilidade total: <br> $$
+P(N) = P(N|I)P(I) + P(N|\overline{I})P(\overline{I})
+$$ Substituindo os valores conhecidos, obtemos: <br> $$
+P(A) = (0.95)(0.10) + (0.03)(0.90) = 0.122
+$$ Que traduzindo para <i>R</i>, temos:
+
+```{r}
+P_N <- P_N_dado_I * P_I + P_N_dado_nao_I * P_nao_I
+P_N
+```
+
+Assim, a probabilidade de a central receber uma notificação de intrusão é de 0.122 ou 12.2%.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>1.2. A central recebeu um aviso de intrusão nessa residência. Qual a probabilidade de este ser falso?</b>
+
+Para resolver esta questão, precisamos de calcular a probabilidade de ter ocorrido um falso alarme, dado que a central recebeu uma notificação. Isto é representado por $P(\overline{I}|N)$, ou seja, a probabilidade de não haver intrusão (<b>$\overline{I}$</b>), dado que o alarme notificou a central (<b>$N$</b>).
+
+Aqui, vamos usar Fórmula de Bayes porque queremos calcular uma "probabilidade condicional inversa" — ou seja, a probabilidade de algo que aconteceu (não ter havido uma intrusão (<b>$\overline{I}$</b>) dado que já sabemos que a central recebeu uma notificação (<b>$N$</b>)).
+
+Ou seja,
+
+$$
+P(\overline{I}|N) = \frac{P(N|\overline{I})P(\overline{I})}{P(N)} = \frac{(0.03)(0.90)}{0.122} \approx 0.2213
+$$
+
+Que traduzindo para <i>R</i>, temos:
+
+```{r}
+P_nao_I_dado_N <- P_N_dado_nao_I * P_nao_I / P_N
+P_nao_I_dado_N
+```
+
+Portanto, a probabilidade de a notificação ser um falso alarme, dado que o alarme notificou a central, é de aproximadamente 0,221 ou 22,1%.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>1.3. Qual a probabilidade de, num certo dia, ter ocorrido efetivamente uma intrusão, sendo que a central não recebeu qualquer notificação?</b>
+
+Neste caso, queremos calcular a probabilidade de ter ocorrido uma intrusão ($I$) dado que o alarme não notificou a central ($\overline{N}$). Ou seja, queremos $P(I|\overline{N})$.
+
+Esta questão também é resolvida usando a fórmula de Bayes, que neste caso é expresso como:
+
+$$
+P(I|\overline{N}) = \frac{P(\overline{N}|I)P(I)}{P(\overline{N})}
+$$
+
+Onde:
+
+-   $P(\overline{N}|I)$ é a probabilidade de o alarme não notificar a central, dado que ocorreu uma intrusão.
+
+Como o alarme notifica a central em 95% das vezes em que ocorre uma intrusão, então a probabilidade de não notificar a central, dado que ocorreu uma intrusão, é de 5% ou 0.05. Ou seja, $$
+        P(\overline{N}|I) = 1 - P(N|I) = 1 - 0.95 = 0.05
+$$
+
+-   $P(I)$ é a probabilidade de ocorrer uma intrusão, dada no enunciado e expressa em 1.1. acima. Que é de $P(I) = 0.10$.
+
+-   $P(\overline{N})$ é a probabilidade de o alarme não notificar a central, independentemente de ter ocorrido uma intrusão ou não. Isto é, $$
+          P(\overline{N}) = 1 - P(N) = 1 - 0.122 = 0.878
+    $$
+
+<br>
+
+Desta forma, substituindo os valores conhecidos, obtemos:
+
+$$
+P(I|\overline{N}) = \frac{(0.05)(0.10)}{0.878} \approx 0.0057
+$$
+
+Que traduzindo para <i>R</i>, temos:
+
+```{r}
+P_nao_N_dado_I <- 1 - P_N_dado_I
+P_nao_N <- 1 - P_N
+P_nao_N
+
+P_I_dado_nao_N <- P_nao_N_dado_I * P_I / P_nao_N       # nota: P_I foi definido em 1.1.
+P_I_dado_nao_N
+```
+
+Portanto, a probabilidade de ter ocorrido uma intrusão, dado que o alarme não notificou a central, é de aproximadamente 0,0057 ou 0,57%.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>1.4. Assuma que em cada dia, cada residência com alarme emite no máximo uma notificação de intrusão (ou seja, admita que não existe mais que uma notificação, nem mais que uma tentativa de intrusão, para a mesma residência, no mesmo dia), o que acontece, para cada residência, com a probabilidade calculada em 1.1. acima. <br>A empresa tem contrato com 1000 residências daquela zona.
+
+Faça uma única simulação que exemplifique um dia de notificações nessa central. <br>Na simulação que efetuou, quantas residências emitiram notificações? Dessas, quantas deverão ter resultado de verdadeiras tentativas de intrusão?</b>
+
+Para simular um dia de notificações na central, vamos seguir as Notas 2 e 3 mencionadas no final do enunciado. E portanto vamos usar a função `sample` do R para simular o envio de notificações de intrusão para as 1000 residências. Para o caso de cada residência, a notificação é enviada com a probabilidade calculada em 1.1. ($P(N)$).
+
+```{r}
+# ------------------------------------------------------------------------------------
+# simular um dia de notificações na central, 
+# sabendo que vai receber notificações de 1000 residências
+# e usando as probabilidades anteriormente calculadas em 1.1. (P_N) e 1.3. (P_nao_N)
+# ------------------------------------------------------------------------------------
+
+num_residencias <- 1000
+notificacoes <- c(1, 0)  # (1 para existência de notificação, 0 para ausência de notificação)
+probabilidades_de_notificacao <- c(P_N, P_nao_N) 
+
+dia_de_notificacoes_na_central <- sample(
+                                     notificacoes, 
+                                     size = num_residencias, 
+                                     replace = TRUE, 
+                                     prob = probabilidades_de_notificacao
+                                  )
+
+# visualizar simulação
+dia_de_notificacoes_na_central
+```
+
+Na simulação efetuada, as residências que emitiram notificações são aquelas que têm o valor 1. <br>Portanto, vamos contar o número de notificações efetuadas na simulação.
+
+```{r}
+# contar o número de notificações
+num_notificacoes <- sum(dia_de_notificacoes_na_central == 1)
+
+# visualizar
+num_notificacoes
+```
+
+Dessas `r num_notificacoes` notificações, a quantidade que deverá ter resultado de verdadeiras tentativas de intrusão é cerca de 95% do total de notificações, que corresponde à probabilidade de ser emitida uma notificação à central sabendo que ocorreu uma intrusão ($P(N|I)$).
+
+```{r}
+# calcular o nº de notificações que deverão ter resultado de verdadeiras tentativas de intrusão
+num_notif_com_verdadeiras_intrusoes <- num_notificacoes * P_N_dado_I
+
+# visualizar
+num_notif_com_verdadeiras_intrusoes
+```
+
+Ou seja, cerca de `r as.integer(num_notif_com_verdadeiras_intrusoes)` notificações deverão ter resultado de verdadeiras tentativas de intrusão.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>Nota1:</b> Não construa o espaço de resultados completo! (Por razões práticas!)
+
+<b>Qual seria o número de linhas desse dataframe?</b> – [a resposta a esta questão faz também parte do exercício]{.underline}.
+
+<br> Se tivéssemos de construir o espaço de resultados completo para as 1000 residências, considerando todas as possíveis combinações de intrusões e notificações, cada residência teria 4 possíveis eventos:
+
+1.  Intrusão e Notificação;
+2.  Intrusão sem Notificação;
+3.  Sem Intrusão e Notificação (Falso Alarme);
+4.  Sem Intrusão e Sem Notificação.
+
+Assim, para 1000 residências, o número total de combinações possíveis seria $4^{1000}$. Este é um número extremamente grande e computacionalmente inviável, já que o espaço de resultados completo envolveria um *dataframe* com $4^{1000}$ linhas.
+
+Contudo, como a questão 1.4. pede para considerarmos apenas as *notificações* (ou seja, se houve ou não notificação), cada residência tem apenas 2 possíveis resultados: Notificação = 0 (não houve notificação) ou *Notificação = 1* (houve notificação). Neste caso, o número de linhas de um dataframe que representaria o espaço de resultados completo seria $2^{1000}$.
+
+Ainda assim, $2^{1000}$ é um número gigantesco e impraticável, o que justifica a sugestão de não construir o espaço de resultados completo, mas sim fazer uma simulação, como referido no enunciado.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>Nota2:</b> Codifique 1 para existência de notificação e 0 para a ausência de notificação.
+
+<b>Nota3:</b> Consulte a função “sample” no <i>R</i>.

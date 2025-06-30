@@ -1,0 +1,309 @@
+---
+title: "Estatística Computacional 2024/2025 - TPC04 <br><br> Resolução - Grupo_A 4"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+<br>
+
+## Grupo_A 4
+
+-   Ricardo Valério (nº 112255 - jravo\@iscte-iul.pt)
+-   Gonçalo Mealha (nº 123391 - gasma\@iscte-iul.pt)
+
+<br>
+
+## TPC04
+
+#### **Em cada exercício**
+
+1.  Defina teoricamente a variável aleatória de interesse.
+
+    <hr style="border-top: 2px dashed green; margin: 4px 0;">
+
+2.  Especifique teoricamente o modelo probabilístico em causa.
+
+    <hr style="border-top: 2px dashed green; margin: 4px 0;">
+
+3.  Explicite teoricamente a probabilidade pedida.
+
+    <hr style="border-top: 2px dashed green; margin: 4px 0;">
+
+4.  Calcule a probabilidade pedida, recorrendo a funções R apropriadas.
+
+<hr>
+
+<br>
+
+### Enunciado
+
+#### P1.
+
+O termo *Churn Rate* representa uma métrica que indica a taxa de perda de clientes ou utilizadores de um serviço durante um determinado período de tempo, e é frequentemente utilizado na sua versão em inglês em ambiente empresarial.
+
+Numa publicação de 2021 (disponível [aqui](https://www.mediapost.com/publications/article/362337/netflix-boasts-best-monthly-churn-rate-disney-co.html)) a TelevisionNewsDaily refere que a churn rate da Netflix foi de 2.5% no último trimestre de 2020, nos EUA. Embora estes valores sejam provavelmente muito diferentes no momento atual, vamos assumi-los como reais para efeitos deste exercício, ou seja, que a *churn rate* da Netflix no mercado EUA se mantém nos 2.5% num horizonte trimestral.
+
+<br>
+
+<b>a) Suponha que recolhe uma amostra de 300 subscritores, no início de um trimestre. Qual a probabilidade de, no fim do trimestre, pelo menos 290 [ainda serem clientes]{.underline}?</b>
+
+A variável aleatória de interesse, $X$, é definida como: $$X = \text{nº de subscritores, numa amostra de 300, que ainda são clientes no final do trimestre}$$ Por outras palavras, esta variável aleatória conta quantos dos 300 subscritores mantêm a sua subscrição após o trimestre.
+
+<hr style="border-top: 2px dashed green;">
+
+O modelo probabilístico que melhor se ajusta a esta situação é o modelo binomial, pois podemos verificar as características que definem esta distribuição:
+
+-   <u>*Número fixo de provas*</u>: a amostra é fixa, com 300 subscritores.
+
+-   <u>*Dois resultados possíveis em cada prova*</u>: cada subscritor pode continuar como cliente (sucesso) ou cancelar a subscrição (insucesso).
+
+-   <u>*Probabilidade constante de sucesso*</u>: A probabilidade de sucesso (continuar como cliente) é $p = 0.975$ (que corresponde ao complementar da *churn rate* de 2.5%) e é a mesma para todos os subscritores.
+
+-   <u>*Independência entre provas*</u>: A decisão de um subscritor, manter ou cancelar a subscrição, não influencia a decisão de outro subscritor.
+
+Assim, o modelo probabilístico para $X$ segue uma distribuição binomial:
+
+$$X \sim Bi(n = 300, p = 0.975)$$ onde:
+
+-   $n = 300$ é o tamanho da amostra (os 300 subscritores no início do trimestre) e <br>
+-   $p = 0.975$ é a probabilidade de sucesso em cada subscritor continuar como cliente no final do trimestre.
+
+Para complementar a explicação da especificação do modelo probabilístico e relembrando os conceitos abordados em aula, observamos que a distribuição binomial pode ser vista como uma sequência de provas de Bernoulli independentes. Onde uma prova de Bernoulli é uma experiência aleatória com apenas dois resultados possíveis: sucesso (neste caso - continuar cliente) ou insucesso (cancelar a subscrição).
+
+<hr style="border-top: 2px dashed green;">
+
+Agora, queremos calcular a probabilidade de pelo menos 290 subscritores ainda serem clientes ao final do trimestre, ou seja $P(X \geq 290)$.
+
+<hr style="border-top: 2px dashed green;">
+
+Para efetuar esse cálculo, utilizamos a função de distribuição acumulada da distribuição binomial, através da função `pbinom()` do R, que nos dá a probabilidade de $X$ ser menor ou igual a um determinado valor.
+
+Como queremos a probabilidade de pelo menos 290 subscritores ainda serem clientes, calculamos a probabilidade de $X$ ser menor ou igual a 289 e subtraímos esse valor de 1 (pois a soma das probabilidades de todos os valores possíveis de $X$ é 1).
+
+Assim, a probabilidade,
+
+$$
+\begin{split}
+P(X \geq 290) & = 1 - P(X < 290) \\
+ & = 1 - P(X \leq 289) \space \space \space \space \space  \text{ (como foi feito na linha 7 do código abaixo)} \\
+ & = P(X > 289) \space \space \space \space \space \space \space \space \space \space \space  \text{ (forma alternativa como foi feito na linha 10)} \\
+\end{split}
+$$
+
+Em R podemos calcular esta probabilidade da seguinte forma:
+
+```{r, attr.source='.numberLines'}
+# parâmetros
+n <- 300     # nº de subscritores
+p <- 0.975   # probabilidade de um subscritor continuar como cliente
+x <- 290     # nº mínimo de subscritores que continuam clientes
+
+# calcular a probabilidade P(X >= 290) = 1 - P(X <= 289)
+probabilidade <- 1 - pbinom(x - 1, size = n, prob = p)
+
+# ou de forma equivalente utilizando lower.tail = FALSE que fará P(X > 289)
+probabilidade <- pbinom(x - 1, size = n, prob = p, lower.tail = FALSE)
+
+# visualizar
+probabilidade
+```
+
+A probabilidade de, no fim do trimestre, pelo menos 290 utilizadores continuarem a usufruir do serviço é de **`r round(probabilidade,3)`** .
+
+<br>
+
+<hr>
+
+<br>
+
+<b>b) Simule 2000 vezes a recolha de uma amostra de 300 subscritores, obtendo em cada simulação o número de subscritores ainda clientes no fim do período. Qual a proporção de simulações onde se registaram pelo menos 290 clientes ainda clientes no final do período? Compare, e comente, essa proporção com a probabilidade obtida em a).</b>
+
+Para simular a recolha de 2000 amostras de 300 subscritores, podemos utilizar a função `rbinom()` do R, que é uma das funções associadas à distribuição binomial (`slide 8` do ficheiro `VA discretas - parte 2`) e que nos permite simular a realização de várias provas de Bernoulli, gerando observações aleatórias com a distribuição binomial especificada nos parâmetros.
+
+Para cada simulação, queremos verificar se o número de subscritores que ainda são clientes no final do período é pelo menos 290. Para isso, contamos quantas simulações satisfazem essa condição e calculamos a proporção dessas simulações em relação ao total de simulações.
+
+Traduzindo para o R, temos:
+
+```{r}
+# parâmetros
+n <- 300              # nº de subscritores
+p <- 0.975            # probabilidade de sucesso (continuar como cliente)
+x <- 290              # nº mínimo de subscritores ainda clientes
+n_simulacoes <- 2000  # nº de simulações
+
+# simular 2000 amostras da distribuição binomial com os parâmetros especificados
+simulacoes <- rbinom(n_simulacoes, size = n, prob = p)
+
+# contar quantas simulações tiveram pelo menos 290 clientes
+sucessos <- sum(simulacoes >= x)
+
+# calcular a proporção de simulações que satisfazem a condição X >= 290
+proporcao <- sucessos / n_simulacoes
+
+# visualizar
+proporcao
+
+```
+
+Esta proporção representa uma estimativa empírica da probabilidade (onde no fundo estamos a aplicar o conceito frequencista de probabilidade) que se baseia na repetição de uma experiência aleatória um grande número de vezes e na contagem de quantas vezes um determinado evento ocorre.
+
+Observámos que ao reproduzir a simulação várias vezes, a proporção obtida pode variar ligeiramente, devido à natureza aleatória da simulação. No entanto, a tendência é que a proporção se aproxime da probabilidade teórica.
+
+E por isso, a proporção obtida a partir da simulação está próxima da probabilidade encontrada na alínea a). A razão para isso é que a simulação empírica tenta replicar os resultados esperados de acordo com o modelo probabilístico.
+
+Outra observação que podemos fazer é que, de acordo com a *Lei dos Grandes Números*, se aumentarmos o número de simulações cada vez mais, a proporção obtida na simulação (valor empírico) deve convergir para a probabilidade teórica.
+
+<br>
+
+<hr>
+
+<br>
+
+#### P2.
+
+Admita que, em determinada janela horária, o número de clientes de um serviço que, por minuto, acedem aos serviços online de ajuda desse serviço, pode ser modelizado por uma Poisson de média 1.6.
+
+<br>
+
+<b>a) Qual a probabilidade de, em um minuto, no máximo 4 clientes acederem ao serviço de ajuda?</b>
+
+A variável aleatória de interesse, $Y$, é definida como: $$Y = \text{nº de clientes que, por minuto, acedem ao serviço de ajuda}$$
+
+<hr style="border-top: 2px dashed green;">
+
+Como o enunciado indica, $Y$ segue uma distribuição de Poisson com média $1.6$.
+
+A distribuição de Poisson é uma distribuição de probabilidade que descreve o número de eventos (neste caso, acessos ao serviço de ajuda) que ocorrem num determinado intervalo de tempo ou espaço, quando esses eventos ocorrem com uma taxa média constante e de forma independente.
+
+O parâmetro caracterizador ($\lambda$) numa distribuição de Poisson é igual ao valor esperado e à variância da distribuição, e representa a taxa média de ocorrência de eventos num determinado intervalo de tempo ou espaço. E portanto neste caso, $\lambda = 1.6$.
+
+Ou seja, $Y \sim Po(\lambda = 1.6)$
+
+<hr style="border-top: 2px dashed green;">
+
+Queremos calcular $P(Y \leq 4)$, ou seja, a probabilidade de, em um minuto, no máximo 4 clientes acederem ao serviço de ajuda.
+
+<hr style="border-top: 2px dashed green;">
+
+Para calcular esta probabilidade, utilizamos a função de distribuição acumulada da distribuição de Poisson, através da função `ppois()` do R:
+
+```{r}
+# calcular P(Y <= 4)
+probabilidade_alinea_a <- ppois(q = 4, lambda = 1.6)
+
+# visualizar
+probabilidade_alinea_a   # nomeou-se a variável desta forma para ser usada na alínea c)
+```
+
+Portanto, a probabilidade de, em um minuto, no máximo 4 clientes acederem ao serviço de ajuda é de aproximadamente <u>**`r round(probabilidade_alinea_a, 3)`**</u>.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>b) Qual a probabilidade de, numa hora, registarem-se no mínimo 100 acessos?</b>
+
+Para esta questão a variável aleatória de interesse, $W$, é definida como: $$W = \text{nº de clientes que, por hora, acedem ao serviço de ajuda}$$
+
+<hr style="border-top: 2px dashed green;">
+
+Como estamos a trabalhar com uma distribuição de Poisson, podemos aproveitar a propriedade da Poisson que permite ajustar o intervalo de tempo, pois a intervalos proporcionais corresponderão parâmetros igualmente proporcionais.
+
+Assim a média de acessos por hora será $1.6 \times 60 = 96$ porque: <br>
+
+-   O nº de acessos por minuto é 1.6 <br>
+-   Num intervalo de 60 minutos, o nº de acessos será 60 vezes maior.
+
+Logo, $W \sim Po(\lambda = 96)$.
+
+<hr style="border-top: 2px dashed green;">
+
+Queremos calcular $P(W \geq 100)$, ou seja, a probabilidade de, numa hora, registarem-se no mínimo 100 acessos.
+
+$$
+\begin{split}
+P(W \geq 100) & = 1 - P(W < 100) \\
+ & = 1 - P(W \leq 99) \space \space \space \space \space  \text{ (como foi feito na linha 4 do código abaixo)} \\
+ & = P(W > 99) \space \space \space \space \space \space \space \space \space \space \space  \text{ (forma alternativa como foi feito na linha 7)} \\
+\end{split}
+$$
+
+<hr style="border-top: 2px dashed green;">
+
+Para calcular esta probabilidade, utilizamos uma vez mais a função de distribuição acumulada da distribuição de Poisson, através da função `ppois()` do R:
+
+```{r, attr.source='.numberLines'}
+n <- 100   # nº mínimo de acessos por hora
+
+# calcular P(W >= 100) = 1 - P(W <= 99)
+probabilidade <- 1 - ppois(n - 1, lambda = 96)
+
+# ou de forma equivalente utilizando lower.tail = FALSE que fará P(W > 99)
+probabilidade <- ppois(n - 1, lambda = 96, lower.tail = FALSE)
+
+# visualizar
+probabilidade
+
+```
+
+Portanto, a probabilidade de, numa hora, registarem-se no mínimo 100 acessos é de aproximadamente <u>**`r round(probabilidade, 3)`**</u>.
+
+<br>
+
+<hr>
+
+<br>
+
+<b>c) Qual a probabilidade de, em 10 períodos distintos de 1 minuto, haver 6 ou mais onde o número de acessos por minuto foi no máximo 4?</b>
+
+Nesta questão queremos saber qual a probabilidade de que, em 10 minutos distintos, haja pelo menos 6 minutos onde o número de acessos ao serviço de ajuda foi no máximo 4.
+
+Ou seja, teremos de combinar a distribuição de Poisson da alínea a) com uma distribuição binomial, que nos permitirá calcular a probabilidade de um certo número de sucessos (neste caso, minutos com no máximo 4 acessos) em várias tentativas independentes (os 10 minutos distintos).
+
+Em cada minuto já vimos anteriormente que o número de acessos ao serviço de ajuda segue uma distribuição de Poisson com média 1.6. Ou seja, $Y \sim Po(\lambda = 1.6)$. E queremos calcular $P(Y \leq 4)$. <br> Esta probabilidade foi calculada e armazenada numa variável na alínea *a)* chamada `probabilidade_alinea_a`.
+
+Mas agora queremos ver o que acontece ao longo de 10 minutos distintos. Para cada minuto, temos duas possibilidades:
+
+1.  o nº de acesso é no máximo 4 (sucesso) com probabilidade `probabilidade_alinea_a`
+2.  o nº de acessos é superior a 4 (insucesso) com probabilidade `1 - probabilidade_alinea_a`
+
+Cada minuto é como uma experiência de Bernoulli, e queremos calcular a probabilidade de ter pelo menos 6 sucessos em 10 tentativas independentes.
+
+<hr style="border-top: 2px dashed green;">
+
+Então esta situção pode ser modelizada por uma distribuição binomial, onde a variável aleatória de interesse, $Z$, é definida como: $$Z = \text{nº de minutos, em 10 períodos distintos de 1 minuto, onde o nº de acessos foi no máximo 4}$$
+
+Assim, $Z \sim Bi(n = 10, \space p =$ `probabilidade_alinea_a`$)$
+
+<hr style="border-top: 2px dashed green;">
+
+Queremos calcular $P(Z \geq 6)$, ou seja, a probabilidade de ter 6 ou mais minutos com no máximo 4 acessos.
+
+$$
+\begin{split}
+P(Z \geq 6) & = 1 - P(Z < 6) \\
+ & = 1 - P(Z \leq 5) \space \space \space \space \space  \text{ (como foi feito na linha 2 do código abaixo)} \\
+ & = P(Z > 5) \space \space \space \space \space \space \space \space \space \space \space  \text{ (forma alternativa como foi feito na linha 5)} \\
+\end{split}
+$$
+
+<hr style="border-top: 2px dashed green;">
+
+Para calcular esta probabilidade, utilizamos a função de distribuição acumulada da distribuição binomial, através da função `pbinom()` do R:
+
+```{r, attr.source='.numberLines'}
+# calcular P(Z >= 6) = 1 - P(Z <= 5)
+probabilidade_alinea_c <- 1 - pbinom(5, size = 10, prob = probabilidade_alinea_a)
+
+# ou de forma equivalente utilizando lower.tail = FALSE que fará P(Z > 5)
+probabilidade_alinea_c <- pbinom(5, size = 10, prob = probabilidade_alinea_a, lower.tail = FALSE)
+
+# visualizar
+probabilidade_alinea_c
+```
+
+Portanto, a probabilidade de, em 10 períodos distintos de 1 minuto, haver 6 ou mais onde o número de acessos por minuto foi no máximo 4 é de aproximadamente <u>**`r round(probabilidade_alinea_c, 3)`**</u>.
